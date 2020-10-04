@@ -28,6 +28,7 @@
 (require 'core-spacemacs-buffer)
 (require 'core-keybindings)
 (require 'core-toggle)
+(require 'core-cycle)
 (require 'core-funcs)
 (require 'core-micro-state)
 (require 'core-transient-state)
