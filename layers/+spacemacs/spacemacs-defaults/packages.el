@@ -334,6 +334,23 @@
         :off-message "Line numbers disabled."
         :evil-leader "tnv")
 
+      (spacemacs|add-cycle
+          line-number-types
+        '(spacemacs/toggle-relative-line-numbers-on
+          spacemacs/toggle-absolute-line-numbers-on
+          spacemacs/toggle-visual-line-numbers-on
+          spacemacs/toggle-visual-line-numbers-off)
+        :documentation "Cycle through different line number types.")
+
+      (spacemacs|define-transient-state line-number-types
+        :title "Line number types Transient State"
+        :doc "\n[_n_/_<right>_] next"
+        :bindings
+        ("n" spacemacs/cycle-line-number-types)
+        ("<right>" spacemacs/cycle-line-number-types))
+      (spacemacs/set-leader-keys "tnn"
+        'spacemacs/line-number-types-transient-state/spacemacs/cycle-line-number-types)
+
       (when (spacemacs//linum-backward-compabitility)
         (add-hook 'prog-mode-hook 'display-line-numbers-mode)
         (add-hook 'text-mode-hook 'display-line-numbers-mode))
@@ -362,6 +379,7 @@
       (spacemacs|add-toggle line-numbers
         :mode linum-mode
         :documentation "Show the line numbers."
+        ;; TODO check if (spacemacs/declare-prefix "tn" ...) is overwritten?
         :evil-leader "tn")
       (advice-add #'linum-update-window
                   :after #'spacemacs//linum-update-window-scale-fix)
