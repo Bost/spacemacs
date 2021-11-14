@@ -38,6 +38,8 @@
     (electric-indent-mode :location built-in)
     (ediff :location built-in)
     (eldoc :location built-in)
+    (help-fns+ :location local
+               :toggle (not (fboundp 'describe-keymap))) ; built in emacs28+
     (hi-lock :location built-in)
     (image-mode :location built-in)
     (imenu :location built-in)
@@ -153,7 +155,7 @@
   ;; additional key bindings such as "* ." to dired. To keep the old behavior,
   ;; load dired-x after dired.
   (with-eval-after-load 'dired
-    (require 'dired-x))
+        (require 'dired-x))
   (use-package dired-x
     :commands (dired-jump
                dired-jump-other-window
@@ -230,6 +232,12 @@
     (eldoc-add-command #'evil-append)
     (eldoc-add-command #'evil-append-line)
     (eldoc-add-command #'evil-force-normal-state)))
+
+(defun spacemacs-defaults/init-help-fns+ ()
+  (use-package help-fns+
+    :commands (describe-keymap)
+    :init
+    (advice-add 'help-do-xref :after (lambda (_pos _func _args) (setq-local tab-width 8)))))
 
 (defun spacemacs-defaults/init-hi-lock ()
   (with-eval-after-load 'hi-lock
@@ -326,10 +334,26 @@
       :off-message "Line numbers disabled."
       :evil-leader "tnv")
 
+    (spacemacs|add-cycle
+        line-number-types
+      '(spacemacs/toggle-relative-line-numbers-on
+        spacemacs/toggle-absolute-line-numbers-on
+        spacemacs/toggle-visual-line-numbers-on
+        spacemacs/toggle-visual-line-numbers-off)
+      :documentation "Cycle through different line number types.")
+
+    (spacemacs|define-transient-state line-number-types
+      :title "Line number types Transient State"
+      :doc "\n[_n_/_<right>_] next"
+      :bindings
+      ("n" spacemacs/cycle-line-number-types)
+      ("<right>" spacemacs/cycle-line-number-types))
+    (spacemacs/set-leader-keys "tnn"
+      'spacemacs/line-number-types-transient-state/spacemacs/cycle-line-number-types)
+
     ;; it's ok to add an advice before the function is defined, and we must
     ;; add this advice before calling `global-display-line-numbers-mode'
-    (define-advice display-line-numbers--turn-on (:before-while (&rest _) spacemacs//enable-line-numbers)
-      (spacemacs/enable-line-numbers-p))
+    (advice-add #'display-line-numbers--turn-on :around #'spacemacs//linum-on)
     (when dotspacemacs-line-numbers
       ;; delay the initialization of number lines when opening Spacemacs
       ;; normally. If opened via the command line with a file to visit then
@@ -342,6 +366,29 @@
                           (global-display-line-numbers-mode))
                         lazy-loading-line-numbers)
                     (global-display-line-numbers-mode)))))))
+
+(defun spacemacs-defaults/init-linum ()
+  (use-package linum
+    :init
+    (progn
+      (setq linum-format "%4d")
+      (spacemacs|add-toggle line-numbers
+        :mode linum-mode
+        :documentation "Show the line numbers."
+        ;; TODO check if (spacemacs/declare-prefix "tn" ...) is overwritten?
+        :evil-leader "tn")
+      (advice-add #'linum-update-window
+                  :after #'spacemacs//linum-update-window-scale-fix)
+      (advice-add #'linum-on
+                  :around #'spacemacs//linum-on))
+    :config
+    (progn
+      (when dotspacemacs-line-numbers
+        (global-linum-mode)))))
+
+(defun spacemacs-defaults/init-occur-mode ()
+  (evilified-state-evilify-map occur-mode-map
+    :mode occur-mode))
 
 (defun spacemacs-defaults/init-package-menu ()
   (evilified-state-evilify-map package-menu-mode-map
