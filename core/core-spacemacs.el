@@ -50,6 +50,7 @@
 (require 'core-keybindings)
 (require 'core-toggle)
 (require 'core-early-funcs)
+(require 'core-cycle)
 (require 'core-funcs)
 (require 'core-transient-state)
 (require 'core-use-package-ext)
