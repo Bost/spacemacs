@@ -8,12 +8,20 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; License: GPLv3
+
+;; This funny line is made by `^' followed by `L'
+
+
 (require 'core-funcs)
 
 (defvar spacemacs-cycles '()
   "List of all declared cycles. The structure of an element is a
 property list (name :func FUNCTION :doc STRING :key STRING).")
 
+;; TODO write function for creating the cycling list
+;; See also:
+;;   spacemacs//company-complete-common-or-cycle-backward
+;;   magit-blame-cycle-style
 (defmacro spacemacs|add-cycle (name cycling-list &rest props)
   "Add a cycle-NAME symbol. In contrast to toggle which cycles around two
 elements, the length of the CYCLING-LIST is unlimited.
@@ -63,12 +71,17 @@ All properties supported by `spacemacs//create-key-binding-form' can be
 used."
   (declare (indent 1))
   (let* (
-         (wrapper-func (intern (format "spacemacs/cycle-%s"
+         (wrapper-func (intern (format "spacemacs/%s-%s"
+                                       "cycle"
+                                       ;; (if (= (length cycling-list) 2)
+                                       ;;     "toggle"
+                                       ;;   "cycle")
                                        (symbol-name name))))
-         ;; TODO Cycling forwars / backwards - see also spacemacs/cycle-spacemacs-theme
+         ;; TODO cycling forwars / backwards - see spacemacs/cycle-spacemacs-theme
          ;; (wrapper-func-forward (intern (format "spacemacs/cycle-%s-forward" (symbol-name name))))
          ;; (wrapper-func-backward (intern (format "spacemacs/cycle-%s-backward" (symbol-name name))))
-         ;; Last executed function. See also (defvar-local magit-blame--style nil)
+
+	 ;; Last executed function. See also (defvar-local magit-blame--style nil)
          (wrapper-func-last (intern (format "%s-func-last" wrapper-func)))
          (start-func (plist-get props :start-func))
          (doc (plist-get props :documentation))
@@ -93,7 +106,13 @@ used."
                (car (or (cdr (memq ,wrapper-func-last ,cycling-list))
                         ;; if ,wrapper-func-last isn't in cycleable, start over
                         ,cycling-list)))
-         (funcall ,wrapper-func-last))
+         (if (functionp ,wrapper-func-last)
+             (funcall ,wrapper-func-last)
+           (eval ,wrapper-func-last)))
+       ;; (message "###### %s defined. props %s" ',wrapper-func ',props)
        ,@bindkeys)))
+
+(defun foo ()
+  (message "###### foo"))
 
 (provide 'core-cycle)

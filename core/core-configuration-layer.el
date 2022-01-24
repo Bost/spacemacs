@@ -2424,14 +2424,18 @@ depends on it."
         (expand-file-name
          (package-desc-dir pkg-desc)))))
 
+;; TODO Unify terminology: delete / remove / uninstall
 (defun configuration-layer//package-delete (pkg-name)
   "Delete package with name PKG-NAME."
   (if-let ((pkg (car (alist-get pkg-name package-alist))))
       ;; add force flag to ignore dependency checks in Emacs25
       (if (configuration-layer//system-package-p pkg)
+          ;; On Guix see `package-directory-list' where the entries are defined
+          ;; by configurations of 'guix home' and 'guix system'
+          ;; (message "Can't delete package %s since it's a system package." pkg-name)
           (message "Would have removed package %s but this is a system package so it has not been changed." pkg-name)
         (package-delete pkg t t))
-    (message "Can't remove package %s since it isn't installed." pkg-name)))
+    (message "Can't delete package %s since it isn't installed." pkg-name)))
 
 (defun configuration-layer/delete-orphan-packages (packages)
   "Delete PACKAGES if they are orphan.
