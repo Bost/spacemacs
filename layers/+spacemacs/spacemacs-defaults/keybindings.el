@@ -482,13 +482,21 @@
 (spacemacs|add-toggle highlight-current-line-globally
   :mode global-hl-line-mode
   :documentation "Globally highlight the current line."
-  :evil-leader "thh")
-(spacemacs|add-toggle truncate-lines
-  :status truncate-lines
-  :on (toggle-truncate-lines)
-  :off (toggle-truncate-lines -1)
+  :evil-leader "thh"
+  )
+;; (spacemacs|add-toggle truncate-lines
+;;   :status truncate-lines
+;;   :on (toggle-truncate-lines)
+;;   :off (toggle-truncate-lines -1)
+;;   :documentation "Toggle between line wrapping or truncation (no wrap)."
+;;   :evil-leader "tl")
+(spacemacs|add-cycle
+    truncate-lines
+  '((toggle-truncate-lines)
+    (toggle-truncate-lines -1))
   :documentation "Toggle between line wrapping or truncation (no wrap)."
   :evil-leader "tl")
+
 (spacemacs|add-toggle visual-line-navigation
   :status visual-line-mode
   :on
