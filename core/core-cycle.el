@@ -1,6 +1,6 @@
 ;;; core-cycle.el --- Spacemacs Core File
 ;;
-;; Copyright (c) 2021 Rostislav Svoboda
+;; Copyright (c) 2021-2022 Rostislav Svoboda
 ;;
 ;; Author: Rostislav Svoboda <Rostislav.Svoboda@gmail.com>
 ;; URL: https://github.com/Bost/spacemacs
@@ -27,6 +27,12 @@ Usage:
   (spacemacs|add-cycle foo-bar \\='(a b c) :start-func \\='b)
   (spacemacs|add-cycle foo-bar \\='(a b c) :start-func \\='d)
 
+It works also for anonymous functions:
+  (spacemacs|add-cycle foo-bar '((lambda () (message \"a\") \"a\")
+                                 (lambda () (message \"b\") \"b\")
+                                 (lambda () (message \"c\") \"c\")
+                                 (lambda () (message \"d\") \"d\")))
+
 Try: M-x spacemacs/cycle-foo-bar or:
   (message \"1. %s, 2. %s 3. %s; func-last: %s\"
            (spacemacs/cycle-foo-bar)
@@ -41,10 +47,10 @@ Note: function advising can be also used. E.g.:
 
 Available PROPS:
 
-`:start-func FUNC'
-    FUNC function initially called. May be or may not be in present in the
-    CYCLING-LIST. If it is then the cycling starts from this function. Defaults
-    to nil.
+`:start-func FUNC' FUNC function initially called. May be or may
+    not be in present in the CYCLING-LIST. If it is then the
+    cycling starts from this function. Otherwise it starts with
+    the first function in the CYCLING-LIST. Defaults to nil.
 
 `:doc STRING'
     STRING describes what the cycle-NAME does.
