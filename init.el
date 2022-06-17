@@ -26,7 +26,10 @@
 
 ;; Avoid garbage collection during startup.
 ;; see `SPC h . dotspacemacs-gc-cons' for more info
-(setq counter 0)
+
+(defun dbg=tstp () (car (time-convert nil t)))
+(setq dbg=init-time (dbg=tstp))
+(setq dbg=fmt "%012d")
 
 (defun length-load-path ()
   (if (boundp 'load-path)
@@ -36,10 +39,9 @@
 (defmacro dbg (f)
   (let ((result (make-symbol "result")))
     `(progn
-       (message "%03d {{{ [%s] %s" ,counter ',f ,(length-load-path))
+       (message "%s {{{ [%s] %s" ,(format dbg=fmt (- (dbg=tstp) dbg=init-time)) ',f ,(length-load-path))
        (let ((,result ,f))
-         (message "%03d }}} [%s] %s" ,counter ',f ,(length-load-path))
-         ,(setq counter (+ 1 counter))
+         (message "%s }}} [%s] %s" ,(format dbg=fmt (- (dbg=tstp) dbg=init-time)) ',f ,(length-load-path))
          ,result))))
 
 (defconst emacs-start-time (current-time))
