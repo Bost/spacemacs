@@ -231,26 +231,33 @@ Note: the hooked function is not executed when in dumped mode."
 
      ;; Ultimate configuration decisions are given to the user who can defined
      ;; them in his/her ~/.spacemacs file
-     (dotspacemacs|call-func dotspacemacs/user-config
-                             "Calling dotfile user config...")
-     (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
-                             "Calling dotfile Emacs custom settings...")
+     (dbg
+      (dotspacemacs|call-func dotspacemacs/user-config
+                              "Calling dotfile user config..."))
+     (dbg
+      (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
+                              "Calling dotfile Emacs custom settings..."))
      ;; don't write custom settings into the dotfile before loading them,
      ;; otherwise https://github.com/syl20bnr/spacemacs/issues/10504 happens
-     (spacemacs/initialize-custom-file-sync)
-     (run-hooks 'spacemacs-post-user-config-hook)
+     (dbg
+      (spacemacs/initialize-custom-file-sync))
+     (dbg
+      (run-hooks 'spacemacs-post-user-config-hook))
      (setq spacemacs-post-user-config-hook-run t)
      (when (fboundp dotspacemacs-scratch-mode)
        (with-current-buffer "*scratch*"
-         (funcall dotspacemacs-scratch-mode)
-         (run-hooks 'spacemacs-scratch-mode-hook)))
+         (dbg
+          (funcall dotspacemacs-scratch-mode))
+         (dbg
+          (run-hooks 'spacemacs-scratch-mode-hook))))
      (when spacemacs--delayed-user-theme
-       (spacemacs/load-theme spacemacs--delayed-user-theme
-                             spacemacs--fallback-theme t))
-     (spacemacs-buffer//startup-hook)
-     (configuration-layer/display-summary emacs-start-time)
-     (spacemacs/check-for-new-version nil spacemacs-version-check-interval)
-     (spacemacs-buffer/goto-link-line)
+       (dbg
+        (spacemacs/load-theme spacemacs--delayed-user-theme
+                              spacemacs--fallback-theme t)))
+     (dbg (spacemacs-buffer//startup-hook))
+     (dbg (configuration-layer/display-summary emacs-start-time))
+     (dbg (spacemacs/check-for-new-version nil spacemacs-version-check-interval))
+     (dbg (spacemacs-buffer/goto-link-line))
      (setq spacemacs-initialized t)
      (setq gc-cons-threshold (car dotspacemacs-gc-cons)
            gc-cons-percentage (cadr dotspacemacs-gc-cons))
@@ -258,9 +265,9 @@ Note: the hooked function is not executed when in dumped mode."
 
   (let ((default-directory spacemacs-start-directory))
     (if dotspacemacs-byte-compile
-        (spacemacs//ensure-byte-compilation spacemacs--compiled-files)
-      (spacemacs//remove-byte-compiled-files-in-dir spacemacs-core-directory)))
+        (dbg (spacemacs//ensure-byte-compilation spacemacs--compiled-files))
+      (dbg (spacemacs//remove-byte-compiled-files-in-dir spacemacs-core-directory))))
   ;; Check if revision has changed.
-  (spacemacs//revision-check))
+  (dbg (spacemacs//revision-check)))
 
 (provide 'core-spacemacs)

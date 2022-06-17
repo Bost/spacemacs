@@ -26,6 +26,22 @@
 
 ;; Avoid garbage collection during startup.
 ;; see `SPC h . dotspacemacs-gc-cons' for more info
+(setq counter 0)
+
+(defun length-load-path ()
+  (if (boundp 'load-path)
+      (format "(length load-path) %s" (length load-path))
+    (format "load-path not defined yet" )))
+
+(defmacro dbg (f)
+  (let ((result (make-symbol "result")))
+    `(progn
+       (message "%03d {{{ [%s] %s" ,counter ',f ,(length-load-path))
+       (let ((,result ,f))
+         (message "%03d }}} [%s] %s" ,counter ',f ,(length-load-path))
+         ,(setq counter (+ 1 counter))
+         ,result))))
+
 (defconst emacs-start-time (current-time))
 (setq gc-cons-threshold 402653184 gc-cons-percentage 0.6)
 (load (concat (file-name-directory load-file-name)
@@ -56,14 +72,14 @@
   ;; Disable file-name-handlers for a speed boost during init
   (let ((file-name-handler-alist nil))
     (require 'core-spacemacs)
-    (spacemacs/dump-restore-load-path)
-    (configuration-layer/load-lock-file)
-    (spacemacs/init)
-    (configuration-layer/stable-elpa-init)
-    (configuration-layer/load)
-    (spacemacs-buffer/display-startup-note)
-    (spacemacs/setup-startup-hook)
-    (spacemacs/dump-eval-delayed-functions)
+    (dbg (spacemacs/dump-restore-load-path))
+    (dbg (configuration-layer/load-lock-file))
+    (dbg (spacemacs/init))
+    (dbg (configuration-layer/stable-elpa-init))
+    (dbg (configuration-layer/load))
+    (dbg (spacemacs-buffer/display-startup-note))
+    (dbg (spacemacs/setup-startup-hook))
+    (dbg (spacemacs/dump-eval-delayed-functions))
     (when (and dotspacemacs-enable-server (not (spacemacs-is-dumping-p)))
       (require 'server)
       (when dotspacemacs-server-socket-dir
