@@ -69,14 +69,14 @@ the final step of executing code in `emacs-startup-hook'.")
 
 (defun spacemacs/init ()
   "Perform startup initialization."
-  (setq command-line-args (spacemacs//parse-command-line command-line-args))
-  (when spacemacs-debugp (spacemacs/init-debug))
+  (setq command-line-args (dbg (spacemacs//parse-command-line command-line-args)))
+  (when spacemacs-debugp (dbg (spacemacs/init-debug)))
   ;; silence ad-handle-definition about advised functions getting redefined
   (setq ad-redefinition-action 'accept)
   ;; this is for a smoother UX at startup (i.e. less graphical glitches)
-  (hidden-mode-line-mode)
-  (spacemacs/removes-gui-elements)
-  (spacemacs//setup-ido-vertical-mode)
+  (dbg (hidden-mode-line-mode))
+  (dbg (spacemacs/removes-gui-elements))
+  (dbg (spacemacs//setup-ido-vertical-mode))
   ;; explicitly set the preferred coding systems to avoid annoying prompt
   ;; from emacs (especially on Microsoft Windows)
   (prefer-coding-system 'utf-8)
@@ -87,7 +87,7 @@ the final step of executing code in `emacs-startup-hook'.")
                 ;; overlapped in terminal mode. The GUI specific `<C-i>' is used
                 ;; instead.
                 evil-want-C-i-jump nil)
-  (dotspacemacs/load-file)
+  (dbg (dotspacemacs/load-file))
   (dotspacemacs|call-func dotspacemacs/init "Calling dotfile init...")
   (when dotspacemacs-undecorated-at-startup
     ;; this should be called before toggle-frame-maximized
@@ -95,7 +95,7 @@ the final step of executing code in `emacs-startup-hook'.")
     (add-to-list 'default-frame-alist '(undecorated . t)))
   (when dotspacemacs-maximized-at-startup
     (unless (frame-parameter nil 'fullscreen)
-      (toggle-frame-maximized))
+      (dbg (toggle-frame-maximized)))
     (add-to-list 'default-frame-alist '(fullscreen . maximized)))
   (spacemacs|unless-dumping
     (dotspacemacs|call-func dotspacemacs/user-init "Calling dotfile user init..."))
@@ -111,7 +111,7 @@ the final step of executing code in `emacs-startup-hook'.")
   ;; effective ones.
   ;; Note: Loading custom-settings twice is not ideal since they can have side
   ;; effects! Maybe an inhibit variable in Emacs can suppress these side effects?
-  (spacemacs/initialize-custom-file)
+  (dbg (spacemacs/initialize-custom-file))
   ;; Commenting the first load although it is mentioned above that we must do it
   ;; I don't recall why we must load the custom settings twice and my experiment
   ;; seems to show that we don't need this double loading process anymore.
@@ -120,7 +120,7 @@ the final step of executing code in `emacs-startup-hook'.")
   ;;                         "Calling dotfile Emacs custom settings...")
   (setq dotspacemacs-editing-style (dotspacemacs//read-editing-style-config
                                     dotspacemacs-editing-style))
-  (configuration-layer/initialize)
+  (dbg (configuration-layer/initialize))
   ;; frame title init
   (when dotspacemacs-frame-title-format
     (require 'format-spec)
@@ -129,7 +129,7 @@ the final step of executing code in `emacs-startup-hook'.")
         (setq icon-title-format '((:eval (spacemacs/title-prepare dotspacemacs-icon-title-format))))
       (setq icon-title-format frame-title-format)))
   ;; theme
-  (spacemacs/load-default-theme spacemacs--fallback-theme 'disable)
+  (dbg (spacemacs/load-default-theme spacemacs--fallback-theme 'disable))
   ;; font
   (spacemacs|do-after-display-system-init
    ;; If you are thinking to remove this call to `message', think twice. You'll
@@ -174,10 +174,10 @@ the final step of executing code in `emacs-startup-hook'.")
       (setq-default spacemacs-version-check-lighter "[⇪]"))
   ;; load environment variables
   (if (fboundp 'dotspacemacs/user-env)
-      (dotspacemacs/call-user-env)
-    (spacemacs/load-spacemacs-env))
+      (dbg (dotspacemacs/call-user-env))
+    (dbg (spacemacs/load-spacemacs-env)))
   ;; install the dotfile if required
-  (dotspacemacs/maybe-install-dotfile))
+  (dbg (dotspacemacs/maybe-install-dotfile)))
 
 (defun spacemacs//setup-ido-vertical-mode ()
   "Setup `ido-vertical-mode'."
@@ -227,7 +227,7 @@ Note: the hooked function is not executed when in dumped mode."
      ;; Activate winner-mode for non dumped emacs sessions. Do this prior to
      ;; user-config to allow users to disable the feature and patch ediff
      ;; themselves. See issue 12582 for details.
-     (winner-mode t)
+     (dbg (winner-mode t))
 
      ;; Ultimate configuration decisions are given to the user who can defined
      ;; them in his/her ~/.spacemacs file

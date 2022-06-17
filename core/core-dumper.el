@@ -51,13 +51,13 @@
 
 (defun spacemacs/dump-save-load-path ()
   "Save `load-path' variable."
-  (setq spacemacs-dump-load-path load-path))
+  (dbg (setq spacemacs-dump-load-path load-path)))
 
 (defun spacemacs/dump-restore-load-path ()
   "Restore the `load-path' variable from the dump. "
   (spacemacs|unless-dumping
     (when (not (null spacemacs-dump-load-path))
-      (setq load-path spacemacs-dump-load-path))))
+      (dbg (setq load-path spacemacs-dump-load-path)))))
 
 (defun spacemacs/defer (&optional idle-time)
   "Return t or IDLE-TIME when Spacemacs is not running from a dump."

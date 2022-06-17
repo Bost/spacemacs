@@ -1416,9 +1416,9 @@ discovery."
   (spacemacs-buffer/set-mode-line "Indexing layers..." t)
   (let ((search-paths (append
                        ;; layers shipped with spacemacs
-                       (list configuration-layer-directory)
+                       (dbg (list configuration-layer-directory))
                        ;; layers in private folder ~/.emacs.d/private
-                       (list spacemacs-private-directory)
+                       (dbg (list spacemacs-private-directory))
                        ;; layers in dotdirectory
                        ;; this path may not exist, so check if it does
                        (when dotspacemacs-directory
@@ -1999,7 +1999,7 @@ RNAME is the name symbol of another existing layer."
                       (oref pkg :location)
                       (car (oref pkg :owners)))))
             (when dir
-              (add-to-list 'load-path dir)))
+              (dbg (add-to-list 'load-path dir))))
           ;; configuration
           (unless (memq (oref pkg :location) '(local site built-in))
             (configuration-layer//activate-package pkg-name))

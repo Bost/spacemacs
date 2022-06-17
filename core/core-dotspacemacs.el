@@ -751,7 +751,7 @@ are caught and signaled to user in spacemacs buffer."
      (when ,msg (spacemacs-buffer/message ,msg))
      (when (fboundp ',func)
        (condition-case-unless-debug err
-           (,func)
+           (dbg (,func))
          (error
           (configuration-layer//increment-error-count)
           (spacemacs-buffer/append (format "Error in %s: %s\n"
@@ -825,13 +825,13 @@ Returns non nil if the layer has been effectively inserted."
                                          (+ insert-point 2
                                             (length (symbol-name layer-name)))))
         (save-buffer)))
-    (load-file (dotspacemacs/location))
+    (dbg (load-file (dbg (dotspacemacs/location))))
     t))
 
 (defun dotspacemacs//profile-user-config (f &rest args)
   "Compute time taken by the `dotspacemacs/user-config' function."
   (let ((stime (current-time)))
-    (apply f args)
+    (dbg (apply f args))
     (setq dotspacemacs--user-config-elapsed-time
           (float-time (time-subtract (current-time) stime)))))
 
@@ -860,12 +860,13 @@ Called with `C-u C-u' skips `dotspacemacs/user-config' _and_ preliminary tests."
                 (dotspacemacs/call-user-env)
                 ;; try to force a redump when reloading the configuration
                 (let ((spacemacs-force-dump t))
-                  (configuration-layer/load))
+                  (dbg (configuration-layer/load)))
                 (if (member arg '((4) (16)))
                     (message (concat "Done (`dotspacemacs/user-config' "
                                      "function has been skipped)."))
-                  (dotspacemacs|call-func dotspacemacs/user-config
-                                          "Calling dotfile user config...")
+                  (dbg
+                   (dotspacemacs|call-func dotspacemacs/user-config
+                                           "Calling dotfile user config..."))
                   (run-hooks 'spacemacs-post-user-config-hook)
                   (message "Done.")))
             (switch-to-buffer-other-window dotspacemacs-test-results-buffer)
@@ -924,7 +925,7 @@ a display strng and the value is the actual value to return."
   (unless (file-exists-p dotspacemacs-filepath)
     (spacemacs-buffer/set-mode-line "Dotfile wizard installer" t)
     (when (dotspacemacs/install 'with-wizard)
-      (configuration-layer/load))))
+      (dbg (configuration-layer/load)))))
 
 (defun dotspacemacs/install (arg)
   "Install the dotfile, return non nil if the dotfile has been installed.
@@ -971,9 +972,9 @@ If ARG is non nil then ask questions to the user before installing the dotfile."
           (write-file dotspacemacs-filepath)
           (message "%s has been installed." dotspacemacs-filepath)
           t))))
-  (dotspacemacs/load-file)
+  (dbg (dotspacemacs/load-file))
   ;; force new wizard values to be applied
-  (dotspacemacs/init))
+  (dbg (dotspacemacs/init)))
 
 (defun dotspacemacs/load-file ()
   "Load ~/.spacemacs if it exists."
@@ -1105,8 +1106,8 @@ error recovery."
         dotspacemacs-install-packages
         (passed-tests 0)
         (total-tests 0))
-    (load dotspacemacs-filepath)
-    (dotspacemacs/layers)
+    (dbg (load dotspacemacs-filepath))
+    (dbg (dotspacemacs/layers))
     (spacemacs//test-list 'stringp
                           'dotspacemacs-configuration-layer-path
                           "is a string" "path")
@@ -1136,7 +1137,7 @@ error recovery."
                    (dotspacemacs/get-variable-list))
          (passed-tests 0) (total-tests 0))
      (setq dotspacemacs-filepath fpath)
-     (load dotspacemacs-filepath)
+     (dbg (load dotspacemacs-filepath))
      ,@body))
 
 (defun dotspacemacs//test-dotspacemacs/init ()

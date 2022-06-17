@@ -88,4 +88,4 @@
         (setq server-socket-dir dotspacemacs-server-socket-dir))
       (unless (server-running-p)
         (message "Starting a server...")
-        (server-start)))))
+        (dbg (server-start))))))
