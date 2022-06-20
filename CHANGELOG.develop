@@ -2316,6 +2316,8 @@ Other:
 - New packages:
   - =helm-ls-git= (thanks to duianto)
 - Improvements:
+  - Shorten "helm-\(.*?\)-smart-do-search\(.*\)" to "hsearch-\1\2"
+    with old names aliased for backward compatibility
   - Load helm before =read-file-name= and =completing-read=
     (thanks duianto and thanks Miciah for a more elegant solution)
   - Load helm before =completion-at-point= (thanks to duianto)
@@ -2343,8 +2345,8 @@ Other:
     selection navigation (thanks to Boris Sergeyev)
 - Key bindings:
   - Added Key bindings for directory search:
-    - ~SPC s d for =spacemacs/helm-dir-smart-do-search=
-    - ~SPC s D for =spacemacs/helm-dir-smart-do-search-region-or-symbol=
+    - ~SPC s d for =spacemacs/hsearch-dir=
+    - ~SPC s D for =spacemacs/hsearch-dir-region-or-symbol=
     - ~SPC s a d for =spacemacs/helm-dir-do-ag=
     - ~SPC s a D for =spacemacs/helm-dir-do-ag-region-or-symbol=
     - ~SPC s k d for =spacemacs/helm-dir-do-ack=
@@ -2374,7 +2376,7 @@ Other:
   - Fixed winum integration (thanks to Sylvain Benner)
   - Fixed "Invalid face reference" error in Helm transient state
     (thanks to duianto)
-  - Fixed error from =spacemacs/helm-files-smart-do-search= on non-file buffers
+  - Fixed error from =spacemacs/hsearch-files= on non-file buffers
     (thanks to Miciah Masters)
   - Fixed regression: void function =helm-current-directory= on =C-x C-f=
     (thanks to bmag)

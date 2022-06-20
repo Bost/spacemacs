@@ -118,7 +118,7 @@
   (interactive)
   (spacemacs//helm-do-ag-region-or-symbol 'spacemacs/helm-file-do-ag))
 
-(defun spacemacs/helm-file-smart-do-search (&optional default-inputp)
+(defun spacemacs/hsearch-file (&optional default-inputp)
   "Search in current file using `dotspacemacs-search-tools'.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'
 If DEFAULT-INPUTP is non nil then the current region or symbol at point
@@ -129,12 +129,16 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
                                         dotspacemacs-search-tools
                                         default-inputp)))
 
-(defun spacemacs/helm-file-smart-do-search-region-or-symbol ()
+(defalias 'spacemacs/helm-file-smart-do-search 'spacemacs/hsearch-file)
+
+(defun spacemacs/hsearch-file-region-or-symbol ()
   "Search in current file using `dotspacemacs-search-tools' with
  default input.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'."
   (interactive)
-  (spacemacs/helm-file-smart-do-search t))
+  (spacemacs/hsearch-file t))
+
+(defalias 'spacemacs/helm-file-smart-do-search-region-or-symbol 'spacemacs/hsearch-file-region-or-symbol)
 
 ;; Search in files -----------------------------------------------------
 
@@ -187,7 +191,7 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   (interactive)
   (spacemacs//helm-do-ag-region-or-symbol 'spacemacs/helm-files-do-rg))
 
-(defun spacemacs/helm-files-smart-do-search (&optional default-inputp)
+(defun spacemacs/hsearch-files (&optional default-inputp)
   "Search in files using `dotspacemacs-search-tools'.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'
 If DEFAULT-INPUTP is non nil then the current region or symbol at point
@@ -198,11 +202,15 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
                                         dotspacemacs-search-tools
                                         default-inputp)))
 
-(defun spacemacs/helm-files-smart-do-search-region-or-symbol ()
+(defalias 'spacemacs/helm-files-smart-do-search 'spacemacs/hsearch-files)
+
+(defun spacemacs/hsearch-files-region-or-symbol ()
   "Search in files using `dotspacemacs-search-tools' with default input.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'."
   (interactive)
-  (spacemacs/helm-files-smart-do-search t))
+  (spacemacs/hsearch-files t))
+
+(defalias 'spacemacs/helm-files-smart-do-search-region-or-symbol 'spacemacs/hsearch-files-region-or-symbol)
 
 ;; Search in current dir -----------------------------------------------
 
@@ -251,7 +259,7 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   (interactive)
   (spacemacs//helm-do-ag-region-or-symbol 'spacemacs/helm-files-do-rg default-directory))
 
-(defun spacemacs/helm-dir-smart-do-search (&optional default-inputp)
+(defun spacemacs/hsearch-dir (&optional default-inputp)
   "Search in current directory using `dotspacemacs-search-tools'.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'
 If DEFAULT-INPUTP is non nil then the current region or symbol at point
@@ -262,12 +270,16 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
                                         dotspacemacs-search-tools
                                         default-inputp)))
 
-(defun spacemacs/helm-dir-smart-do-search-region-or-symbol ()
+(defalias 'spacemacs/helm-dir-smart-do-search 'spacemacs/hsearch-dir)
+
+(defun spacemacs/hsearch-dir-region-or-symbol ()
   "Search in current directory using `dotspacemacs-search-tools'.
  with default input.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'."
   (interactive)
-  (spacemacs/helm-dir-smart-do-search t))
+  (spacemacs/hsearch-dir t))
+
+(defalias 'spacemacs/helm-dir-smart-do-search-region-or-symbol 'spacemacs/hsearch-dir-region-or-symbol)
 
 ;; Search in buffers ---------------------------------------------------
 
@@ -318,7 +330,7 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
   (interactive)
   (spacemacs//helm-do-ag-region-or-symbol 'spacemacs/helm-buffers-do-rg))
 
-(defun spacemacs/helm-buffers-smart-do-search (&optional default-inputp)
+(defun spacemacs/hsearch-buffers (&optional default-inputp)
   "Search in opened buffers using `dotspacemacs-search-tools'.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'
 If DEFAULT-INPUTP is non nil then the current region or symbol at point
@@ -329,25 +341,31 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
                                         dotspacemacs-search-tools
                                         default-inputp)))
 
-(defun spacemacs/helm-buffers-smart-do-search-region-or-symbol ()
+(defalias 'spacemacs/helm-buffers-smart-do-search 'spacemacs/hsearch-buffers)
+
+(defun spacemacs/hsearch-buffers-region-or-symbol ()
   "Search in opened buffers using `dotspacemacs-search-tools' with
  default input.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'."
   (interactive)
-  (spacemacs/helm-buffers-smart-do-search t))
+  (spacemacs/hsearch-buffers t))
+
+(defalias 'spacemacs/helm-buffers-smart-do-search-region-or-symbol 'spacemacs/hsearch-buffers-region-or-symbol)
 
 ;; Search in project ---------------------------------------------------
 
-(defun spacemacs/helm-project-smart-do-search-in-dir (dir)
+(defun spacemacs/hsearch-project-in-dir (dir)
   (interactive)
   (let ((default-directory dir))
-    (spacemacs/helm-project-smart-do-search)))
+    (spacemacs/hsearch-project)))
+
+(defalias 'spacemacs/helm-project-smart-do-search-in-dir 'spacemacs/hsearch-project-in-dir)
 
 (defun spacemacs/helm-projectile-grep ()
   "Replace `helm-projectile-grep' to actually use `ag', `pt' etc.."
   (interactive)
   (helm-exit-and-execute-action
-   'spacemacs/helm-project-smart-do-search-in-dir))
+   'spacemacs/hsearch-project-in-dir))
 
 (defun spacemacs/helm-project-do-ag ()
   "Search in current project with `ag'."
@@ -416,7 +434,7 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
          'spacemacs/helm-files-do-rg dir)
       (message "error: Not in a project."))))
 
-(defun spacemacs/helm-project-smart-do-search (&optional default-inputp)
+(defun spacemacs/hsearch-project (&optional default-inputp)
   "Search in current project using `dotspacemacs-search-tools'.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'
 If DEFAULT-INPUTP is non nil then the current region or symbol at point
@@ -428,12 +446,16 @@ If DEFAULT-INPUTP is non nil then the current region or symbol at point
                                           dotspacemacs-search-tools
                                           default-inputp))))
 
-(defun spacemacs/helm-project-smart-do-search-region-or-symbol ()
+(defalias 'spacemacs/helm-project-smart-do-search 'spacemacs/hsearch-project)
+
+(defun spacemacs/hsearch-project-region-or-symbol ()
   "Search in current project using `dotspacemacs-search-tools' with
  default input.
  Search for a search tool in the order provided by `dotspacemacs-search-tools'."
   (interactive)
-  (spacemacs/helm-project-smart-do-search t))
+  (spacemacs/hsearch-project t))
+
+(defalias 'spacemacs/helm-project-smart-do-search-region-or-symbol 'spacemacs/hsearch-project-region-or-symbol)
 
 ;; grep
 

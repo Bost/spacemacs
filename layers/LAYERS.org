@@ -396,7 +396,7 @@ and more...
 Mastering your choice of completion system will make you a Spacemacs power user.
 
 Features:
-- Project wide =grep= like text search via =helm-dir-smart-do-search=
+- Project wide =grep= like text search via =hsearch-dir= (hsearch ~ helm smart search)
 - Project wide text replacements using =helm-edit-mode=
 - Buffer wide dynamic text search via =helm-swoop=
 - Fuzzy matching for most =helm-sources=

@@ -425,7 +425,7 @@ ivy"
           (arg
            (require 'helm)
            (let (helm-ff-newfile-prompt-p)
-             (spacemacs/helm-files-smart-do-search)))
+             (spacemacs/hsearch-files)))
           (t
            (require 'helm)
            (let (helm-ff-newfile-prompt-p)
