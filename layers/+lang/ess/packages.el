@@ -105,7 +105,7 @@
       (with-eval-after-load 'ess-inf-mode
         (spacemacs/ess-bind-keys-for-inferior)))
     :config
-    (define-key ess-mode-map (kbd "<s-return>") #'ess-eval-line))
+    (define-key ess-mode-map (kbd "s-<return>") #'ess-eval-line))
 
   ;; xref integration added with #96ef5a6
   (spacemacs|define-jump-handlers ess-mode 'xref-find-definitions))

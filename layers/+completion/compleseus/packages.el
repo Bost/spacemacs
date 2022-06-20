@@ -206,7 +206,7 @@
     ;; is 'any, such that any key triggers the preview.
     ;; (setq consult-preview-key 'any)
     ;; (setq consult-preview-key (kbd "M-."))
-    ;; (setq consult-preview-key (list (kbd "<S-down>") (kbd "<S-up>")))
+    ;; (setq consult-preview-key (list (kbd "S-<down>") (kbd "S-<up>")))
     ;; For some commands and buffer sources it is useful to configure the
     ;; :preview-key on a per-command basis using the `consult-customize' macro.
     (consult-customize
