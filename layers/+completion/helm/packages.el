@@ -66,9 +66,9 @@
            "  Search: [_s_] swoop  [_b_] buffers  [_f_] files  [_/_] project"))
     (spacemacs/transient-state-register-add-bindings 'symbol-highlight
       '(("s" spacemacs/helm-swoop-region-or-symbol :exit t)
-        ("b" spacemacs/helm-buffers-smart-do-search-region-or-symbol :exit t)
-        ("f" spacemacs/helm-files-smart-do-search-region-or-symbol :exit t)
-        ("/" spacemacs/helm-project-smart-do-search-region-or-symbol :exit t)))))
+        ("b" spacemacs/hsearch-buffers-region-or-symbol :exit t)
+        ("f" spacemacs/hsearch-files-region-or-symbol :exit t)
+        ("/" spacemacs/hsearch-project-region-or-symbol :exit t)))))
 
 (defun helm/post-init-bookmark ()
   (spacemacs/set-leader-keys "fb" 'helm-filtered-bookmarks))
@@ -235,22 +235,22 @@
       (define-key helm-projectile-projects-map
         (kbd "C-s") 'spacemacs/helm-projectile-grep)
       ;; `spacemacs/helm-projectile-grep' calls:
-      ;; `spacemacs/helm-project-smart-do-search-in-dir'
+      ;; `spacemacs/hsearch-project-in-dir'
       ;; which needs to be an action.
       ;; Delete the current action.
       (helm-delete-action-from-source
         "Grep in projects `C-s'" helm-source-projectile-projects)
       (helm-add-action-to-source
         "Search in projects `C-s'"
-        'spacemacs/helm-project-smart-do-search-in-dir
+        'spacemacs/hsearch-project-in-dir
         helm-source-projectile-projects))
 
     (spacemacs/set-leader-keys
       ;; helm-ag marks
       "s`"  'helm-ag-pop-stack
       ;; opened buffers scope
-      "sb"  'spacemacs/helm-buffers-smart-do-search
-      "sB"  'spacemacs/helm-buffers-smart-do-search-region-or-symbol
+      "sb"  'spacemacs/hsearch-buffers
+      "sB"  'spacemacs/hsearch-buffers-region-or-symbol
       "sab" 'helm-do-ag-buffers
       "saB" 'spacemacs/helm-buffers-do-ag-region-or-symbol
       "skb" 'spacemacs/helm-buffers-do-ack
@@ -260,13 +260,13 @@
       "stb" 'spacemacs/helm-buffers-do-pt
       "stB" 'spacemacs/helm-buffers-do-pt-region-or-symbol
       ;; current file scope
-      "ss"  'spacemacs/helm-file-smart-do-search
-      "sS"  'spacemacs/helm-file-smart-do-search-region-or-symbol
+      "ss"  'spacemacs/hsearch-file
+      "sS"  'spacemacs/hsearch-file-region-or-symbol
       "saa" 'helm-ag-this-file
       "saA" 'spacemacs/helm-file-do-ag-region-or-symbol
       ;; files scope
-      "sf"  'spacemacs/helm-files-smart-do-search
-      "sF"  'spacemacs/helm-files-smart-do-search-region-or-symbol
+      "sf"  'spacemacs/hsearch-files
+      "sF"  'spacemacs/hsearch-files-region-or-symbol
       "saf" 'helm-do-ag
       "saF" 'spacemacs/helm-files-do-ag-region-or-symbol
       "skf" 'spacemacs/helm-files-do-ack
@@ -276,8 +276,8 @@
       "stf" 'spacemacs/helm-files-do-pt
       "stF" 'spacemacs/helm-files-do-pt-region-or-symbol
       ;; current dir scope
-      "sd"  'spacemacs/helm-dir-smart-do-search
-      "sD"  'spacemacs/helm-dir-smart-do-search-region-or-symbol
+      "sd"  'spacemacs/hsearch-dir
+      "sD"  'spacemacs/hsearch-dir-region-or-symbol
       "sad" 'spacemacs/helm-dir-do-ag
       "saD" 'spacemacs/helm-dir-do-ag-region-or-symbol
       "skd" 'spacemacs/helm-dir-do-ack
@@ -287,10 +287,10 @@
       "std" 'spacemacs/helm-dir-do-pt
       "stD" 'spacemacs/helm-dir-do-pt-region-or-symbol
       ;; current project scope
-      "/"   'spacemacs/helm-project-smart-do-search
-      "*"   'spacemacs/helm-project-smart-do-search-region-or-symbol
-      "sp"  'spacemacs/helm-project-smart-do-search
-      "sP"  'spacemacs/helm-project-smart-do-search-region-or-symbol
+      "/"   'spacemacs/hsearch-project
+      "*"   'spacemacs/hsearch-project-region-or-symbol
+      "sp"  'spacemacs/hsearch-project
+      "sP"  'spacemacs/hsearch-project-region-or-symbol
       "sap" 'spacemacs/helm-project-do-ag
       "saP" 'spacemacs/helm-project-do-ag-region-or-symbol
       "skp" 'spacemacs/helm-project-do-ack
