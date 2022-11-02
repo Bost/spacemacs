@@ -456,7 +456,13 @@
              '(:add (spacemacs/smartparens-pair-newline-and-indent "RET")))
     (when dotspacemacs-smart-closing-parenthesis
       (define-key evil-insert-state-map ")"
-                  'spacemacs/smart-closing-parenthesis))))
+                  'spacemacs/smart-closing-parenthesis))
+
+    (advice-add #'scheme-syntax-propertize-sexp-comment
+                :override #'spacemacs/scheme-syntax-propertize-sexp-comment)
+    ;; Following may cause endless loop
+    ;; (advice-add #'forward-sexp :override #'spacemacs/forward-sexp)
+    ))
 
 (defun spacemacs-editing/init-spacemacs-whitespace-cleanup ()
   (use-package spacemacs-whitespace-cleanup
