@@ -24,6 +24,38 @@
 
 ;; smartparens
 
+(defun spacemacs/scheme-syntax-propertize-sexp-comment (_ end)
+  "Fix the `scheme-syntax-propertize-sexp-comment' See
+https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/scheme.el#L420"
+  (let ((state (syntax-ppss))) ;; Parse-Partial-Sexp State
+    (when (eq 2 (nth 7 state))
+      ;; It's a sexp-comment.  Tell parse-partial-sexp where it ends.
+      (condition-case nil
+          (progn
+            (goto-char (+ 2 (nth 8 state)))
+            ;; FIXME: `forward-sexp` assumes point is not in a string or
+            ;; comment, so this doesn't handle the case where the sexp itself
+            ;; contains a #; comment.
+            ;; (forward-sexp 1)
+
+            ;; an invocation of (sp-forward-sexp 1) boils down to:
+            (when-let ((end-thing (plist-get (sp-get-thing) :end)))
+              (goto-char end-thing))
+            (put-text-property (1- (point)) (point)
+                               'syntax-table (string-to-syntax "> cn")))
+        (scan-error (goto-char end))))))
+
+(defun spacemacs/forward-sexp (&optional arg interactive)
+  "Straight call of `sp-forward-sexp' while ignoring the
+INTERACTIVE parameter since `forward-sexp' doesn't have it.
+
+Unlike `forward-sexp', `sp-forward-sexp' works properly even if
+the point is in a string or comment. (See `forward-sexp'
+docstring)."
+  (interactive "^p\nd")
+  (message "[spacemacs/sp-forward-sexp] interactive %s" interactive)
+  (sp-forward-sexp arg))
+
 (defun spacemacs/smartparens-pair-newline (id action context)
   (save-excursion
     (newline)
