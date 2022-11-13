@@ -423,7 +423,7 @@ For example, if you've cloned Spacemacs to `$HOME/Spacemacs`, and if you use
    bootstrap.
 
 2. Once the bootstrap packages are installed, Spacemacs checks whether you have
-   an customization file `$HOME/.spacemacs`, known as `dotspacemacs`:
+   an customization file `$HOME/.spguimacs`, known as `dotspacemacs`:
 
    - If it already exists, Spacemacs loads it as the configuration.
    - Otherwise, you need to answer a few questions and Spacemacs will generate
@@ -442,17 +442,17 @@ For example, if you've cloned Spacemacs to `$HOME/Spacemacs`, and if you use
    [quick start guide][QUICK_START.org] for more information.
 
 5. In case you want to store your `dotspacemacs` at another location, say
-   under `$HOME/.spacemacs.d`:
+   under `$HOME/.spguimacs.d`:
 
-   - First set the environment variable `SPACEMACSDIR` to `$HOME/.spacemacs.d`.
-   - Move `$HOME/.spacemacs` to `$HOME/.spacemacs.d/init.el`.
+   - First set the environment variable `SPGUIMACSDIR` to `$HOME/.spguimacs.d`.
+   - Move `$HOME/.spguimacs` to `$HOME/.spguimacs.d/init.el`.
 
-   In other word, set `SPACEMACSDIR` to the parent directory of your
+   In other word, set `SPGUIMACSDIR` to the parent directory of your
    `dotspacemacs`, and move `dotspacemacs` to the said directory.
 
 ## Spacemacs logo
 
-For Linux users, create `spacemacs.desktop` in `~/.local/share/applications/`
+For Linux users, create `spguimacs.desktop` in `~/.local/share/applications/`
 using [this .desktop file][spacemacs-desktop] as a reference. Change the `Name`
 parameter to `Name=Spacemacs` and the `Icon` parameter to
 `Icon=/PATH/TO/EMACSD/core/banners/img/spacemacs.png` where `PATH/TO/EMACSD` is

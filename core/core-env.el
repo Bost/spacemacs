@@ -25,7 +25,7 @@
 (require 'load-env-vars)
 
 (defvar spacemacs-env-vars-file
-  (concat (or dotspacemacs-directory "~/") ".spacemacs.env")
+  (concat (or dotspacemacs-directory user-home-directory) ".spguimacs.env")
   "Absolute path to the env file where environment variables are set.")
 
 (defvar spacemacs-ignored-environment-variables
@@ -47,7 +47,7 @@
     )
   "Ignored environments variables.
 Environment variables with names matching these regexps are not
-imported into the `.spacemacs.env' file.")
+imported into the `.spguimacs.env' file.")
 
 (defvar spacemacs--spacemacs-env-loaded nil
   "non-nil if `spacemacs/load-spacemacs-env' has been called at least once.")
@@ -136,7 +136,7 @@ current contents of the file will be overwritten."
   (spacemacs//init-spacemacs-env t))
 
 (defun spacemacs/edit-env ()
-  "Open the `.spacemacs.env' file for editing."
+  "Open the `.spguimacs.env' file for editing."
   (interactive)
   (if (and spacemacs--spacemacs-env-loaded
            (file-exists-p spacemacs-env-vars-file))
@@ -148,7 +148,7 @@ current contents of the file will be overwritten."
     (dotspacemacs/go-to-user-env)))
 
 (defun spacemacs/load-spacemacs-env (&optional force)
-  "Load the environment variables from the `.spacemacs.env' file.
+  "Load the environment variables from the `.spguimacs.env' file.
 If FORCE is non-nil then force the loading of environment variables from env.
 file."
   (interactive "P")

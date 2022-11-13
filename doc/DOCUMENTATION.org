@@ -494,7 +494,7 @@ guidelines first in [[https://github.com/syl20bnr/spacemacs/blob/develop/COMMUNI
 This is a simple configuration layer listing a bunch of themes which you can
 find [[https://github.com/syl20bnr/spacemacs/blob/develop/layers/%2Bthemes/themes-megapack/README.org][here]].
 
-To install it, just add =themes-megapack= to your =~/.spacemacs= like so:
+To install it, just add =themes-megapack= to your =~/.spguimacs= like so:
 
 #+BEGIN_SRC emacs-lisp
   (setq-default dotspacemacs-configuration-layers '(themes-megapack))
@@ -517,11 +517,11 @@ This is the recommended way to manage your private layers.
 
 The best approach is to store all your private layers in an external Git
 repository. For example, if you have a =dotfiles= repository it is a good
-practice to store these layers in there, along with your =~/.spacemacs= file.
+practice to store these layers in there, along with your =~/.spguimacs= file.
 
 Then you are free to symlink your layers into =~/emacs.d/private= /or/ leave them
 anywhere you want, and reference the parent directory in the variable
-=dotspacemacs-configuration-layer-path= of your =~/.spacemacs=.
+=dotspacemacs-configuration-layer-path= of your =~/.spguimacs=.
 
 *Note*: You could also have a dedicated repository for all your private layers
 and then directly clone this repository in =~/.emacs.d/private=.
@@ -535,26 +535,26 @@ Please refer to [[https://github.com/syl20bnr/spacemacs/blob/develop/doc/LAYERS.
 best make them fit with the Spacemacs philosophy and loading strategy.
 
 * Dotfile Configuration
-User configuration can be stored in your =~/.spacemacs= file.
+User configuration can be stored in your =~/.spguimacs= file.
 
 ** Dotfile Installation
 The very first time Spacemacs starts up, it will ask you several questions
-and then install the =.spacemacs= file in your =HOME= directory.
+and then install the =.spguimacs= file in your =HOME= directory.
 
 ** Alternative dotdirectory
-A dotdirectory =~/.spacemacs.d/= can be used instead of a dotfile.
-If you want to use this option, move =~/.spacemacs= to =~/.spacemacs.d/init.el=.
+A dotdirectory =~/.spguimacs.d/= can be used instead of a dotfile.
+If you want to use this option, move =~/.spguimacs= to =~/.spguimacs.d/init.el=.
 
-It is also possible to override the location of =~/.spacemacs.d/= using the
-environment variable =SPACEMACSDIR=. Of course, you can also use symlinks to
+It is also possible to override the location of =~/.spguimacs.d/= using the
+environment variable =SPACEMACS_GUIX_DIR=. Of course, you can also use symlinks to
 change the location of this directory.
 
-*Note*: =~/.spacemacs= will always take priority over =~/.spacemacs.d/init.el=,
-so =~/.spacemacs= must not exist for =~/.spacemacs.d/init.el= to be used by
+*Note*: =~/.spguimacs= will always take priority over =~/.spguimacs.d/init.el=,
+so =~/.spguimacs= must not exist for =~/.spguimacs.d/init.el= to be used by
 Spacemacs.
 
 ** Synchronization of dotfile changes
-To apply the modifications made in =~/.spacemacs= press ~SPC f e R~. It will
+To apply the modifications made in =~/.spguimacs= press ~SPC f e R~. It will
 re-execute the Spacemacs initialization process.
 
 *Note*: A synchronization re-executes the functions =dotspacemacs/init=,
@@ -572,13 +572,13 @@ universal argument (~SPC u SPC f e R~).
 
 ** Testing the dotfile
 You can use the command =SPC SPC dotspacemacs/test-dotfile= to check if your
-=~/.spacemacs= looks correct. This will check, among other things, whether the
+=~/.spguimacs= looks correct. This will check, among other things, whether the
 declared layers can be found and that the variables have sensible values. These
 tests are also run automatically when you synchronize with ~SPC f e R~.
 
 ** Dotfile Contents
 *** Configuration functions
-Five special functions in the =~/.spacemacs= file can be used to perform
+Five special functions in the =~/.spguimacs= file can be used to perform
 configuration at the beginning and end of Spacemacs loading process:
 - =dotspacemacs/init= is called at the very startup of Spacemacs initialization
   before layers configuration. *You should not put any user code* in there
@@ -603,7 +603,7 @@ configuration at the beginning and end of Spacemacs loading process:
 
 *** Custom variables
 By default custom variables from =M-x customize-group= are automatically saved
-at the end of your =~/.spacemacs= file in the function
+at the end of your =~/.spguimacs= file in the function
 =dotspacemacs/emacs-custom-settings= unless you declare a custom =custom-file=
 in the =dotspacemacs/user-init= function, in this case custom variables will be
 written to the user defined =custom-file= and the function
@@ -616,7 +616,7 @@ function.
 
 ** Declaring Configuration layers
 To use a configuration layer, declare it in your dotfile by adding it to the
-=dotspacemacs-configuration-layers= variable of your =~/.spacemacs=.
+=dotspacemacs-configuration-layers= variable of your =~/.spguimacs=.
 
 *Note*: In this documentation a =used layer= is equivalent to a =declared
 layer=.
@@ -636,7 +636,7 @@ Official layers shipped with Spacemacs are stored in =~/.emacs.d/layers=. The
 directory =~/.emacs.d/private= is a drop-in location for your private layers.
 It is possible to put layers at the location of your choice provided you tell
 Spacemacs where to look for them. This is done by setting the list
-=dotspacemacs-configuration-layer-path= in your =~/.spacemacs=. For instance
+=dotspacemacs-configuration-layer-path= in your =~/.spguimacs=. For instance
 to add some layers in =~/.myconfig=, set the variable like this:
 
 #+BEGIN_SRC emacs-lisp
@@ -1046,7 +1046,7 @@ your dotfile.
 ** Default behavior
 By default, the function =dotspacemacs/user-env= only calls the function
 =spacemacs/load-spacemacs-env= which loads the environment variables from
-the file =~/.spacemacs.env=. This file is automatically created for you by
+the file =~/.spguimacs.env=. This file is automatically created for you by
 Spacemacs and it is initialized with the environment variables of your
 system as well as the environment variables of your default shell.
 
@@ -1054,11 +1054,11 @@ To open this file use ~SPC f e e~. You can edit it to change or add/remove
 environment variables. Use ~SPC f e E~ to reload it.
 
 Some dynamic environment variables are ignored by Spacemacs when it first
-creates the =~/.spacemacs.env= file. These ignored variables are listed in
+creates the =~/.spguimacs.env= file. These ignored variables are listed in
 the variable =spacemacs-ignored-environment-variables=.
 
 It is possible to force a new import of system and shell environment variables
-with ~SPC f e C-e~. Note that this action will overwrite =~/.spacemacs.env=.
+with ~SPC f e C-e~. Note that this action will overwrite =~/.spguimacs.env=.
 
 ** Managing environment variables by yourself
 For full flexibility you can bypass the default behavior simply by removing
@@ -1070,13 +1070,13 @@ or just call built-in functions like =setenv= or =(add-to-list 'exec-path ...)=.
 
 If you choose to handle the environment variables by yourself then ~SPC f e e~
 will go to the function =dotspacemacs/user-env= instead of opening the file
-=~/.spacemacs.env=. In all cases ~SPC f e E~ calls the function
+=~/.spguimacs.env=. In all cases ~SPC f e E~ calls the function
 =dotspacemacs/user-env= so you can update your variables in place.
 
 ** Note about the function dotspacemacs/user-env
 It's possible that you don't have this function defined if you have an older
 dotfile. It is recommended to update your dotfile by adding this function,
-see the file =~/.emacs.d/core/template/.spacemacs.template= to copy it.
+see the file =~/.emacs.d/core/template/.spguimacs.template= to copy it.
 If you don't create such function then Spacemacs assumes you are using the
 default behavior described above.
 
@@ -1146,7 +1146,7 @@ This would add binding as ~, oi~ and ~SPC moi~ (note that the "m" in the prefix
 declaration must be include).
 
 There is much more to say about bindings keys, but these are the basics. Keys
-can be bound in your =~/.spacemacs= file or in individual layers.
+can be bound in your =~/.spguimacs= file or in individual layers.
 
 * GUI Elements
 Spacemacs has a minimalistic and distraction free graphical UI:
@@ -1159,12 +1159,12 @@ Spacemacs has a minimalistic and distraction free graphical UI:
 The official Spacemacs theme is [[https://github.com/nashamri/spacemacs-theme][spacemacs-dark]] and it is the default theme
 installed when you first started Spacemacs. There are two variants of the
 theme, a dark one and a light one. Some aspects of these themes can be customized
-in the function =dotspacemacs/user-init= of your =~/.spacemacs=:
+in the function =dotspacemacs/user-init= of your =~/.spguimacs=:
 - the comment background with the boolean =spacemacs-theme-comment-bg=
 - the height of org section titles with =spacemacs-theme-org-height=
 
 *** Choosing themes
-It is possible to define your default themes in your =~/.spacemacs= with the
+It is possible to define your default themes in your =~/.spguimacs= with the
 variable =dotspacemacs-themes=. For instance, to specify =spacemacs-light=,
 =leuven= and =zenburn=:
 
@@ -1226,7 +1226,7 @@ The default font used by Spacemacs is [[https://github.com/adobe-fonts/source-co
 recommended to install it on your system if you wish to use it.
 
 To change the default font set the variable =dotspacemacs-default-font= in your
-=.spacemacs= file, this setting will be used for the =default= and =fixed-pitch= faces.
+=.spguimacs= file, this setting will be used for the =default= and =fixed-pitch= faces.
 By default its value is:
 
 #+BEGIN_SRC emacs-lisp
@@ -1295,7 +1295,7 @@ and ~T~):
 | ~SPC t l~   | toggle truncate lines                                             |
 | ~SPC t L~   | toggle visual lines                                               |
 | ~SPC t n~   | toggle line numbers                                               |
-| ~SPC t n n~ | toggle line numbers as configured in .spacemacs                   |
+| ~SPC t n n~ | toggle line numbers as configured in .spguimacs                   |
 | ~SPC t n a~ | toggle absolute line numbers                                      |
 | ~SPC t n r~ | toggle relative line numbers                                      |
 | ~SPC t n v~ | toggle smooth scrolling                                           |
@@ -1317,7 +1317,7 @@ and ~T~):
 
 *** Global line numbers
 Line numbers can be toggled on in all =prog-mode= and =text-mode= buffers by
-setting the =dotspacemacs-line-numbers= variable in your =~/.spacemacs= to =t=.
+setting the =dotspacemacs-line-numbers= variable in your =~/.spguimacs= to =t=.
 
 #+BEGIN_SRC emacs-lisp
   (setq-default dotspacemacs-line-numbers t)
@@ -1579,7 +1579,7 @@ Spacemacs uses [[https://www.emacswiki.org/emacs/DiminishedModes][diminish]] mod
 The minor mode area can be toggled on and off with ~SPC t m m~
 
 Unicode symbols are displayed by default. Setting the variable
-=dotspacemacs-mode-line-unicode-symbols= to =nil= in your =~/.spacemacs= will
+=dotspacemacs-mode-line-unicode-symbols= to =nil= in your =~/.spguimacs= will
 display ASCII characters instead (may be useful in terminal if you cannot set an
 appropriate font).
 
@@ -1937,7 +1937,7 @@ If you find yourself in a buffer where the Spacemacs (~SPC~) or Vim keybindings
 don't work you can use this to get back to =normal state= (for example in ~SPC
 SPC customize~ press ~fd~ to make ~SPC b b~ work again).
 
-This sequence can be customized in your =~/.spacemacs=.
+This sequence can be customized in your =~/.spguimacs=.
 Example to set it to ~jj~:
 
 #+BEGIN_SRC emacs-lisp
@@ -1957,7 +1957,7 @@ state= to press quickly ~jj~ and inadvertently escape to =normal state=.
 | Emacs (M-x)      | ~SPC SPC~   |
 
 The emacs command key ~SPC~ (executed after the leader key) can be changed
-with the variable =dotspacemacs-emacs-command-key= of your =~/.spacemacs=.
+with the variable =dotspacemacs-emacs-command-key= of your =~/.spguimacs=.
 
 *** Leader key
 On top of =Vim= modes (modes are called states in Spacemacs) there is a
@@ -1971,7 +1971,7 @@ convenience a shortcut key called the major mode leader key is set by default on
 ~​,​~ which saves one precious keystroke.
 
 It is possible to change the major mode leader key by defining the variable
-=dotspacemacs-major-mode-leader-key= in your =~/.spacemacs=. For example to
+=dotspacemacs-major-mode-leader-key= in your =~/.spguimacs=. For example to
 setup the key on tabulation:
 
 #+BEGIN_SRC emacs-lisp
@@ -1997,7 +1997,7 @@ Additional text objects are defined in Spacemacs:
 these is *guaranteed* to never conflict with Spacemacs default key bindings.
 
 *Example:* Put =(spacemacs/set-leader-keys "oc" 'org-capture)= inside
-=dotspacemacs/user-config= in your =~/.spacemacs= file, to be able to use
+=dotspacemacs/user-config= in your =~/.spguimacs= file, to be able to use
 ~SPC o c~ to run org mode capture.
 
 ** Completion
@@ -2214,7 +2214,7 @@ Navigation is performed using the Vi key bindings ~hjkl~.
 bottom of the screen. It is enabled by default.
 
 On Windows, you may want to disable it. To disable the smooth scrolling set the
-=dotspacemacs-smooth-scrolling= variable in your =~/.spacemacs= to =nil=:
+=dotspacemacs-smooth-scrolling= variable in your =~/.spguimacs= to =nil=:
 
 #+BEGIN_SRC emacs-lisp
   (setq-default dotspacemacs-smooth-scrolling nil)
@@ -2616,11 +2616,11 @@ navigate between =Emacs= and Spacemacs specific files.
 
 | Key binding   | Description                                                                                             |
 |---------------+---------------------------------------------------------------------------------------------------------|
-| ~SPC f e d~   | open the spacemacs dotfile (=~/.spacemacs=)                                                             |
-| ~SPC f e D~   | open =ediff= buffer of =~/.spacemacs= and =.spacemacs.template=                                         |
-| ~SPC f e e~   | open the =~/.spacemacs.env= file where environment variables are set or goes to =dotspacemacs/user-env= |
+| ~SPC f e d~   | open the spacemacs dotfile (=~/.spguimacs=)                                                             |
+| ~SPC f e D~   | open =ediff= buffer of =~/.spguimacs= and =.spguimacs.template=                                         |
+| ~SPC f e e~   | open the =~/.spguimacs.env= file where environment variables are set or goes to =dotspacemacs/user-env= |
 | ~SPC f e E~   | reload the environment variables by executing the function =dotspacemacs/user-env=                      |
-| ~SPC f e C-e~ | reinitialize the =~/.spacemacs.env= file by importing system and shell environment variables            |
+| ~SPC f e C-e~ | reinitialize the =~/.spguimacs.env= file by importing system and shell environment variables            |
 | ~SPC f e i~   | open the all mighty =init.el=                                                                           |
 | ~SPC f e I~   | open the =early-init.el=                                                                                |
 | ~SPC f e l~   | locate an Emacs library                                                                                 |
@@ -3136,7 +3136,7 @@ This mode can be frustrating for novices, this is why it is not enabled by
 default.
 
 It is possible to enable it easily for /all programming modes/ with the variable
-=dotspacemacs-smartparens-strict-mode= of you =~/.spacemacs=.
+=dotspacemacs-smartparens-strict-mode= of you =~/.spguimacs=.
 
 #+BEGIN_SRC emacs-lisp
   (setq-default dotspacemacs-smartparens-strict-mode t)
@@ -3430,7 +3430,7 @@ the following command:
 #+END_SRC
 
 To disable the trash you can set the variable =delete-by-moving-to-trash= to
-=nil= in your =~/.spacemacs=.
+=nil= in your =~/.spguimacs=.
 
 *** Editing Lisp code
 Editing of lisp code is provided by [[https://github.com/syl20bnr/evil-lisp-state][evil-lisp-state]].
@@ -3639,11 +3639,11 @@ Some features which could improve editing experience in =*scratch*= buffer.
 
 **** Persistent scratch
 Make your =*scratch*= buffer persistent. Everything you write down in =*scratch*= buffer will be automatically saved and restored.
-You can set variable =dotspacemacs-scratch-buffer-persistent= with a non-nil value in your =.spacemacs= file to enable this feature.
+You can set variable =dotspacemacs-scratch-buffer-persistent= with a non-nil value in your =.spguimacs= file to enable this feature.
 
 **** Unkillable scratch
 Make your =*scratch*= buffer not killable (bury instead).
-You can set variable =dotspacemacs-scratch-buffer-unkillable= with a non-nil value in your =.spacemacs= file to enable this feature.
+You can set variable =dotspacemacs-scratch-buffer-unkillable= with a non-nil value in your =.spguimacs= file to enable this feature.
 
 *** Mouse usage
 There are some added mouse features set for the line number margin (if shown):
@@ -3667,7 +3667,7 @@ All =ediff= commands starts with D:
 | ~SPC D d 3~   | ask for 3 directories and run ediff on them comparing files that have the same name in all of them                                |
 | ~SPC D d d~   | ask for 2 directories and run ediff on them comparing files that have the same name in both                                       |
 | ~SPC D d r~   | run ediff on a directory comparing its files with their revisions if under version control                                        |
-| ~SPC D f .~   | start an ediff session between your =.spacemacs= and its default template in Spacemacs =core=                                     |
+| ~SPC D f .~   | start an ediff session between your =.spguimacs= and its default template in Spacemacs =core=                                     |
 | ~SPC D f 3~   | ask for 3 files and start an ediff session with them                                                                              |
 | ~SPC D f f~   | ask for 2 files and start an ediff session with them                                                                              |
 | ~SPC D f p~   | ask for a buffer or file that contains a patch to apply to a file and start an ediff session with the result                      |
@@ -3861,7 +3861,7 @@ See [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Emacs-Server.htm
 
 ** Keeping the server alive
 It is possible to keep the server alive when you close Emacs by setting the
-variable =dotspacemacs-persistent-server= to =t= in your =~/.spacemacs=.
+variable =dotspacemacs-persistent-server= to =t= in your =~/.spguimacs=.
 
 #+BEGIN_SRC emacs-lisp
   (setq-default dotspacemacs-persistent-server t)

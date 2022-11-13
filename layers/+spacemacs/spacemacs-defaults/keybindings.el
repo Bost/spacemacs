@@ -375,7 +375,7 @@
     ("I" spacemacs/find-user-early-init-file "Open Emacs \"early-init.el\"")
     ("d" spacemacs/find-dotfile "Open Spacemacs dotfile")
     ("D" spacemacs/ediff-dotfile-and-template "Diff. with dotfile template")
-    ("e" spacemacs/edit-env "Open \".spacemacs.env\"")
+    ("e" spacemacs/edit-env "Open \".spguimacs.env\"")
     ("E" dotspacemacs/call-user-env "Refresh env. variables")
     ("l" find-library "Find Emacs library...")
     ("R" dotspacemacs/sync-configuration-layers "Reload configuration")
