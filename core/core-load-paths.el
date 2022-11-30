@@ -32,6 +32,12 @@
   (expand-file-name "~/")
   "User home directory (default ~/).")
 
+(defvar spacemacs-data-directory
+  user-emacs-directory
+  "Writable directory for spacemacs data")
+(unless (file-exists-p spacemacs-data-directory)
+  (make-directory spacemacs-data-directory))
+
 ;; ~/.emacs.d.distros/spacemacs
 (defvar spacemacs-start-directory
   ;; (concat (file-name-directory (or load-file-name buffer-file-name)) "../")
@@ -101,7 +107,7 @@
 ;; because Spacemacs may be installed to a shared location and this directory
 ;; and its children should be per-user.
 (defconst spacemacs-cache-directory
-  (concat user-emacs-directory ".cache/")
+  (concat spacemacs-data-directory ".cache/")
   "Spacemacs storage area for persistent files.")
 
 ;; ~/.emacs.d.distros/spacemacs/.cache/auto-save

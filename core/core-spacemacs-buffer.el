@@ -760,17 +760,21 @@ If REDISPLAY is non-nil then force a redisplay as well"
   (when redisplay (spacemacs//redisplay)))
 
 (defun spacemacs-buffer/message (msg &rest args)
-  "Display MSG in *Messages* prepended with '(Spacemacs)'.
+  "Display MSG in *Messages* prepended with '(Spguimacs)'.
 The message is displayed only if `init-file-debug' is non nil.
 ARGS: format string arguments."
   (when init-file-debug
-    (message "(Spacemacs) %s" (apply 'format msg args))))
+    (message "%s [spacemacs-buffer/message] (Spguimacs) %s"
+             (format my=dbg=fmt (- (my=dbg=tstp) my=dbg=init-time))
+             (apply 'format msg args))))
 
 (defun spacemacs-buffer/error (msg &rest args)
   "Display MSG as an Error message in `*Messages*' buffer.
 ARGS: format string arguments."
   (let ((msg (apply 'format msg args)))
-    (message "(Spacemacs) Error: %s" msg)
+    (message "%s (Spguimacs) Error: %s"
+             (format my=dbg=fmt (- (my=dbg=tstp) my=dbg=init-time))
+             msg)
     (when message-log-max
       (add-to-list 'spacemacs-buffer--errors msg 'append))))
 
@@ -781,7 +785,9 @@ ARGS: format string arguments."
   "Display MSG as a warning message but in buffer `*Messages*'.
 ARGS: format string arguments."
   (let ((msg (apply 'format msg args)))
-    (message "(Spacemacs) Warning: %s" msg)
+    (message "%s (Spguimacs) Warning: %s"
+             (format my=dbg=fmt (- (my=dbg=tstp) my=dbg=init-time))
+             msg)
     (when message-log-max
       (add-to-list 'spacemacs-buffer--warnings msg 'append))))
 
@@ -797,7 +803,9 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
     (let ((buffer-read-only nil))
       (insert msg)
       (when messagebuf
-        (message "(Spacemacs) %s" msg)))))
+        (message "%s [spacemacs-buffer/append] (Spguimacs) %s"
+                 (format my=dbg=fmt (- (my=dbg=tstp) my=dbg=init-time))
+                 msg)))))
 
 (defun spacemacs-buffer/replace-last-line (msg &optional messagebuf)
   "Replace the last line of the spacemacs buffer with MSG.
@@ -808,7 +816,14 @@ If MESSAGEBUF is not nil then MSG is also written in message buffer."
       (delete-region (line-beginning-position) (point-max))
       (insert msg)
       (when messagebuf
-        (message "(Spacemacs) %s" msg)))))
+        ;; (when (string-match
+        ;;        "installing package: farmhouse-light-mod-theme@dotfile"
+        ;;        ;; "installing package: treemacs-magit@treemacs"
+        ;;        msg)
+        ;;   (backtrace))
+        (message "%s [spacemacs-buffer/replace-last-line] (Spguimacs) %s"
+                 (format my=dbg=fmt (- (my=dbg=tstp) my=dbg=init-time))
+                 msg)))))
 
 (eval-and-compile
   (defun spacemacs-buffer//startup-list-jump-func-name (str)

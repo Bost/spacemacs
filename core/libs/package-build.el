@@ -1496,21 +1496,23 @@ are subsequently dumped."
   (unless (file-exists-p package-build-archive-dir)
     (package-build--message "Creating directory %s" package-build-archive-dir)
     (make-directory package-build-archive-dir))
-  (let* ((start-time (current-time))
+  (let* ((f "[package-build-archive]")
+         (start-time (current-time))
          (rcp (package-recipe-lookup name))
          (url (oref rcp url))
          (repo (oref rcp repo))
          (fetcher (package-recipe--fetcher rcp))
          (version nil))
     (cond ((not noninteractive)
-           (message " • %s package %s (from %s)..."
+           (message "%s • %s package %s (from %s)..."
+                    f
                     (if package-build--inhibit-update "Fetching" "Building")
                     name
                     (if repo (format "%s:%s" fetcher repo) url)))
           (package-build-verbose
-           (message "Package: %s" name)
-           (message "Fetcher: %s" fetcher)
-           (message "Source:  %s\n" url)))
+           (message "%s Package: %s" f name)
+           (message "%s Fetcher: %s" f fetcher)
+           (message "%s Source:  %s\n" f url)))
     (package-build--fetch rcp)
     (unless package-build--inhibit-update
       (package-build--select-version rcp)
@@ -1526,11 +1528,13 @@ are subsequently dumped."
                        (directory-files-and-attributes
                         package-build-archive-dir nil
                         (format "\\`%s-[0-9]+" name)))
-          (message "  %s  %s"
+          (message "%s  %s  %s"
+                   f
                    (format-time-string
                     "%FT%T%z" (file-attribute-modification-time attrs) t)
                    file))))
-    (message "%s %s in %.3fs, finished at %s"
+    (message "%s %s %s in %.3fs, finished at %s"
+             f
              (if version "Built" "Fetched")
              name
              (float-time (time-since start-time))

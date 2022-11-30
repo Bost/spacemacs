@@ -35,29 +35,40 @@
 Useful for users in order to given them a hint of potential bottleneck in
 their configuration.")
 
+;;; TODO The emacs-spacemacs guix-package should depend on all emacs-* packages
+;;; See `$dot/guix/home/cfg/spguimacs-packages.scm'. The packages not installed
+;;; by Guix will be automatically installed in the
+;;; `$HOME/.local/share/spacemacs/elpa/28.2/develop/' directory by Spacemacs
+;;; installation mechanism.
 (defconst dotspacemacs-directory
   (let* ((spacemacs-dir-env (getenv "SPGUIMACSDIR"))
          (spacemacs-dir (if spacemacs-dir-env
                             (expand-file-name (concat spacemacs-dir-env "/"))
-                          (expand-file-name ".spguimacs.d/" user-home-directory))))
+                          spacemacs-data-directory)))
     (when (file-directory-p spacemacs-dir)
       spacemacs-dir))
   "Directory containing Spacemacs customizations (defaults to nil).
 - If environment variable SPGUIMACSDIR is set and the directory exists,
   use that value.
-- Otherwise use ~/.spguimacs.d if it exists.")
+- Otherwise use `spacemacs-data-directory' if it exists.")
 
 (defconst dotspacemacs-filepath
   (let* ((spacemacs-init
           (expand-file-name ".spguimacs" user-home-directory)))
       (if (file-regular-p spacemacs-init)
           spacemacs-init
-        (let ((fallback-init (expand-file-name ".spguimacs.d/init.el"
-                                               user-home-directory)))
+        (let ((fallback-init (expand-file-name "/init.el"
+                                               spacemacs-data-directory)))
           (if (file-regular-p fallback-init)
               fallback-init
+            ;; TODO a bug here. The spacemacs-init is not a regular file at this
+            ;; point. There's no reason to use it.
             spacemacs-init))))
-    "Filepath to Spacemacs configuration file: ~/.spguimacs.")
+  "Filepath to Spacemacs configuration file (defaults to ~/.spguimacs).
+- If environment variable SPGUIMACSDIR is set and SPGUIMACSDIR/init.el
+  exists, use that value.
+- Otherwise use ~/.spguimacs if it exists.
+- Otherwise use `spacemacs-data-directory'/init.el if it exists.")
 
 (spacemacs|defc dotspacemacs-distribution 'spacemacs
   "Base distribution to use. This is a layer contained in the directory
@@ -742,7 +753,7 @@ and todos. If non nil only the file name is shown."
 
 (defvar dotspacemacs--pretty-ignore-subdirs
   '(".cache/junk")
-  "Subdirectories of `spacemacs-start-directory' to ignore when
+  "Subdirectories of `spacemacs-data-directory' to ignore when
 prettifying Org files.")
 
 (spacemacs|defc dotspacemacs-scratch-buffer-persistent nil
@@ -766,9 +777,9 @@ will bury it instead of killing."
   "Run `spacemacs/prettify-org-buffer' if `buffer-file-name'
 looks like Spacemacs documentation."
   (when (and dotspacemacs-pretty-docs
-             spacemacs-start-directory
+             spacemacs-data-directory
              buffer-file-name)
-    (let ((start-dir (expand-file-name spacemacs-start-directory))
+    (let ((start-dir (expand-file-name spacemacs-data-directory))
           (buf-path (expand-file-name buffer-file-name)))
       (when (and (string-prefix-p start-dir buf-path)
                  (not (--any? (string-prefix-p (expand-file-name it start-dir) buf-path)

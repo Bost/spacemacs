@@ -260,6 +260,8 @@ Return nil if the package is already installed and should not be upgraded."
   (pcase-let ((`(,name . ,config) rcp)
               (quelpa-build-stable quelpa-stable-p)
               (quelpa--override-version-check quelpa--override-version-check))
+    (let ((f "[quelpa-checkout]"))
+      (quelpa-build--message "%s name: %s\n" f name))
     (unless (or (and (quelpa--package-installed-p name) (not quelpa-upgrade-p))
                 (and (not config)
                      (quelpa-message t "no recipe found for package `%s'" name)))
@@ -644,10 +646,11 @@ choose a source-specific fetcher function, which it calls with
 the same arguments.
 
 Returns the package version as a string."
-  (let ((fetcher (plist-get config :fetcher)))
-    (quelpa-build--message "Fetcher: %s" fetcher)
+  (let ((f "[quelpa-build-checkout]")
+         (fetcher (plist-get config :fetcher)))
+    (quelpa-build--message "%s Fetcher: %s" f fetcher)
     (unless (eq fetcher 'wiki)
-      (quelpa-build--message "Source: %s\n"
+      (quelpa-build--message "%s Source: %s\n" f
                              (or (plist-get config :repo)
                                  (plist-get config :url))))
     (funcall (intern (format "quelpa-build--checkout-%s" fetcher))
