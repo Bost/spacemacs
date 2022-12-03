@@ -928,7 +928,7 @@ If SYMBOL value is `display-graphic-p' then return the result of
   dotspacemacs-filepath)
 
 (defun dotspacemacs/copy-template ()
-  "Copy `.spacemacs.template' in home directory. Ask for confirmation
+  "Copy `.spguimacs.template' in home directory. Ask for confirmation
 before copying the file if the destination already exists."
   (interactive)
   (let* ((copy? (if (file-exists-p dotspacemacs-filepath)
@@ -936,7 +936,7 @@ before copying the file if the destination already exists."
                      (format "%s already exists. Do you want to overwrite it ? "
                              dotspacemacs-filepath)) t)))
     (when copy?
-      (copy-file (concat dotspacemacs-template-directory ".spacemacs.template")
+      (copy-file (expand-file-name ".spguimacs.template" dotspacemacs-template-directory)
                  dotspacemacs-filepath t)
       (message "%s has been installed." dotspacemacs-filepath))))
 
@@ -985,7 +985,7 @@ If ARG is non nil then ask questions to the user before installing the dotfile."
                     spacemacs-base)))))))))
     (with-current-buffer (find-file-noselect
                           (concat dotspacemacs-template-directory
-                                  ".spacemacs.template"))
+                                  ".spguimacs.template"))
       (dolist (p preferences)
         (goto-char (point-min))
         (re-search-forward (car p))
@@ -1004,10 +1004,10 @@ If ARG is non nil then ask questions to the user before installing the dotfile."
   (dotspacemacs/init))
 
 (defun dotspacemacs/load-file ()
-  "Load ~/.spacemacs if it exists."
+  "Load ~/.spguimacs if it exists."
   (let ((dotspacemacs (dotspacemacs/location)))
     (if (file-exists-p dotspacemacs)
-        (unless (with-demoted-errors "Error loading .spacemacs: %S"
+        (unless (with-demoted-errors "Error loading ~/.spguimacs: %S"
                   (load dotspacemacs))
           (dotspacemacs/safe-load))))
   (advice-add 'dotspacemacs/layers :after
@@ -1085,16 +1085,19 @@ If ARG is non nil then ask questions to the user before installing the dotfile."
       (format-spec title-format fs))))
 
 (defun dotspacemacs/safe-load ()
-  "Error recovery from malformed .spacemacs.
-Loads default .spacemacs template and suspends pruning of orphan packages.
+  "Error recovery from malformed .spguimacs.
+Loads default .spguimacs template and suspends pruning of orphan packages.
 Informs users of error and prompts for default editing style for use during
 error recovery."
   (load (concat dotspacemacs-template-directory
-                ".spacemacs.template"))
-  (define-advice dotspacemacs/layers (:after (&rest _) error-recover-preserve-packages)
+                ".spguimacs.template"))
+  (define-advice dotspacemacs/layers
+      (:after (&rest _) error-recover-preserve-packages)
     (setq-default dotspacemacs-install-packages 'used-but-keep-unused)
-    (advice-remove 'dotspacemacs/layers #'dotspacemacs/layers@error-recover-preserve-packages))
-  (define-advice dotspacemacs/init (:after (&rest _) error-recover-prompt-for-style)
+    (advice-remove 'dotspacemacs/layers
+                   #'dotspacemacs/layers@error-recover-preserve-packages))
+  (define-advice dotspacemacs/init
+      (:after (&rest _) error-recover-prompt-for-style)
     (setq-default dotspacemacs-editing-style
                   (intern
                    (ido-completing-read
@@ -1109,7 +1112,8 @@ error recovery."
                       ("emacs" emacs)
                       ("hybrid" hybrid))
                     nil t nil nil 'vim)))
-    (advice-remove 'dotspacemacs/init #'dotspacemacs/init@error-recover-prompt-for-style)))
+    (advice-remove 'dotspacemacs/init
+                   #'dotspacemacs/init@error-recover-prompt-for-style)))
 
 (defun dotspacemacs//test-dotspacemacs/layers ()
   "Tests for `dotspacemacs/layers'"
