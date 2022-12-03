@@ -119,6 +119,10 @@ found."
          (not (spacemacs//can-check-for-new-version-at-startup)))
     (message (concat "Skipping check for new version "
                      "(reason: last check is too recent)")))
+   ((and (not force)
+         (or (string-prefix-p "/gnu/store" spacemacs-start-directory)
+             (string-prefix-p "/nix/store" spacemacs-start-directory)))
+    (message (concat "Skipping check for new version (reason: on guix or nix)")))
    ((require 'async nil t)
     (message "Start checking for new version...")
     (async-start

@@ -302,7 +302,7 @@ preprocessors for the exported .org files."
               });
           });
           </script>")
-         (publish-target (concat spacemacs-start-directory "export/"))
+         (publish-target (concat spacemacs-data-directory "export/"))
          (org-html-htmlize-output-type 'css)
          (org-publish-project-alist
           `(("spacemacs"

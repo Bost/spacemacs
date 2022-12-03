@@ -284,7 +284,7 @@ If ARG is non-nil, force recompile of all found `.el' files.
 If DIR is non-nil, use a given directory for recompilation instead of elpa."
   (interactive "P")
   ;; Replace default directories if dir parameter is filled
-  (let ((user-emacs-dir (or dir user-emacs-directory))
+  (let ((user-emacs-dir (or dir spacemacs-data-directory))
         (package-user-dir (or dir package-user-dir)))
     ;; First argument must be 0 (not nil) to get missing .elc files rebuilt.
     ;; Bonus: Optionally force recompilation with universal ARG
@@ -293,7 +293,7 @@ If DIR is non-nil, use a given directory for recompilation instead of elpa."
        (lambda (fname)
          (when (file-exists-p fname)
            (delete-file fname)))
-       (directory-files-recursively user-emacs-directory "\\.elc$" t)))
+       (directory-files-recursively spacemacs-data-directory "\\.elc$" t)))
     (byte-recompile-directory package-user-dir 0 arg)))
 
 (defun spacemacs/register-repl (feature repl-func &optional tag)

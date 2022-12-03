@@ -989,16 +989,16 @@
 (ert-deftest test-make-layer--make-layer-from-symbol-with-a-dir ()
   (should (equal (cfgl-layer "layer"
                              :name 'layer
-                             :dir spacemacs-start-directory)
+                             :dir spacemacs-data-directory)
                  (configuration-layer/make-layer
-                  'layer nil nil spacemacs-start-directory))))
+                  'layer nil nil spacemacs-data-directory))))
 
 (ert-deftest test-make-layer--make-layer-from-spec-with-a-dir ()
   (should (equal (cfgl-layer "layer"
                              :name 'layer
-                             :dir spacemacs-start-directory)
+                             :dir spacemacs-data-directory)
                  (configuration-layer/make-layer
-                  '(layer :name 'layer) nil nil spacemacs-start-directory))))
+                  '(layer :name 'layer) nil nil spacemacs-data-directory))))
 
 (ert-deftest test-make-layer--cannot-make-layer-without-a-directory ()
   (mocker-let
@@ -1017,10 +1017,10 @@
 (ert-deftest test-make-layer--make-layer-without-a-dir-requires-an-initial-obj ()
   (let ((layer (cfgl-layer "layer"
                            :name 'layer
-                           :dir spacemacs-start-directory)))
+                           :dir spacemacs-data-directory)))
     (should (equal (cfgl-layer "layer"
                                :name 'layer
-                               :dir spacemacs-start-directory)
+                               :dir spacemacs-data-directory)
                    (configuration-layer/make-layer 'layer layer)))))
 
 ;; load packages
@@ -1028,7 +1028,7 @@
 (ert-deftest test-make-layer--make-used-layer-loads-packages-file ()
   (let ((layer (cfgl-layer "layer"
                            :name 'layer
-                           :dir spacemacs-start-directory))
+                           :dir spacemacs-data-directory))
         (layer-packages '(pkg1 pkg2 pkg3))
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (mocker-let
@@ -1042,13 +1042,13 @@
                                 :variables nil
                                 :packages '(pkg1 pkg2 pkg3)
                                 :selected-packages 'all
-                                :dir spacemacs-start-directory)
+                                :dir spacemacs-data-directory)
                     (configuration-layer/make-layer 'layer layer 'used))))))
 
 (ert-deftest test-make-layer--make-layer-force-load-packages-file-with-var ()
   (let ((layer (cfgl-layer "layer"
                            :name 'layer
-                           :dir spacemacs-start-directory))
+                           :dir spacemacs-data-directory))
         (layer-packages '(pkg1 pkg2 pkg3))
         (configuration-layer--load-packages-files t)
         (mocker-mock-default-record-cls 'mocker-stub-record))
@@ -1062,13 +1062,13 @@
                                 :variables nil
                                 :packages '(pkg1 pkg2 pkg3)
                                 :selected-packages 'all
-                                :dir spacemacs-start-directory)
+                                :dir spacemacs-data-directory)
                     (configuration-layer/make-layer 'layer layer))))))
 
 (ert-deftest test-make-layer--make-layer-does-not-load-packages-file-by-default ()
   (let ((layer (cfgl-layer "layer"
                            :name 'layer
-                           :dir spacemacs-start-directory))
+                           :dir spacemacs-data-directory))
         (layer-packages '(pkg1))
         (mocker-mock-default-record-cls 'mocker-stub-record))
     (mocker-let
@@ -1080,7 +1080,7 @@
 (ert-deftest test-make-layer--make-used-layer-can-set-additional-properties ()
   (let ((layer (cfgl-layer "layer"
                            :name 'layer
-                           :dir spacemacs-start-directory))
+                           :dir spacemacs-data-directory))
         (layer-specs '(layer :disabled-for pkg8 pkg9
                              :can-shadow layer2 layer3
                              :variables foo bar toto 1))
@@ -1097,13 +1097,13 @@
                                 :variables '(foo bar toto 1)
                                 :packages '(pkg1 pkg2 pkg3)
                                 :selected-packages 'all
-                                :dir spacemacs-start-directory)
+                                :dir spacemacs-data-directory)
                     (configuration-layer/make-layer layer-specs layer 'used))))))
 
 (ert-deftest test-make-layer--make-not-used-layer-cannot-set-additional-properties ()
   (let ((layer (cfgl-layer "layer"
                            :name 'layer
-                           :dir spacemacs-start-directory))
+                           :dir spacemacs-data-directory))
         (layer-specs '(layer :disabled-for pkg8 pkg9
                              :can-shadow layer2
                              :variables foo bar toto 1))
@@ -1115,7 +1115,7 @@
                                :variables nil
                                :packages nil
                                :selected-packages 'all
-                               :dir spacemacs-start-directory)
+                               :dir spacemacs-data-directory)
                    (configuration-layer/make-layer layer-specs layer)))))
 
 (ert-deftest test-make-layer--make-used-layer-can-override-additional-properties ()
@@ -1124,7 +1124,7 @@
                            :disabled-for '(pkg10)
                            :can-shadow '()
                            :variables '(titi tata tutu 1)
-                           :dir spacemacs-start-directory))
+                           :dir spacemacs-data-directory))
         (layer-specs '(layer :disabled-for pkg8 pkg9
                              :can-shadow layer2
                              :variables foo bar toto 1))
@@ -1142,7 +1142,7 @@
                                 :variables '(foo bar toto 1)
                                 :packages '(pkg1 pkg2 pkg3)
                                 :selected-packages 'all
-                                :dir spacemacs-start-directory)
+                                :dir spacemacs-data-directory)
                     (configuration-layer/make-layer layer-specs layer 'used))))))
 
 (ert-deftest test-make-layer--make-not-used-layer-cannot-override-additional-properties ()
@@ -1153,7 +1153,7 @@
                            :variables '(titi tata tutu 1)
                            :packages '(pkg1 pkg2 pkg3)
                            :selected-packages 'all
-                           :dir spacemacs-start-directory))
+                           :dir spacemacs-data-directory))
         (layer-specs '(layer :disabled-for pkg8 pkg9
                              :can-shadow '(layer2)
                              :variables foo bar toto 1))
@@ -1165,7 +1165,7 @@
                                :variables '(titi tata tutu 1)
                                :packages '(pkg1 pkg2 pkg3)
                                :selected-packages 'all
-                               :dir spacemacs-start-directory)
+                               :dir spacemacs-data-directory)
                    (configuration-layer/make-layer layer-specs layer)))))
 
 ;; ---------------------------------------------------------------------------

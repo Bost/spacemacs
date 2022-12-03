@@ -109,7 +109,7 @@ then copied in the =init.el= file.
 The Emacs dotfile or dotdirectory is not replaced but rather
 complemented by the Spacemacs dotfile or dotdirectory. During startup,
 Emacs still uses =~/.emacs.d/init.el= (or =~/.emacs=) for its
-initialization, and variable =user-emacs-directory= will still point
+initialization, and variable =spacemacs-data-directory= will still point
 to =~/.emacs.d/=, even if =~/.spacemacs.d= or =~/.spacemacs= are
 present. Only now =~/.emacs.d/init.el= is provided by Spacemacs
 (e.g. after cloning the Spacemacs git repo into an empty

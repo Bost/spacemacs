@@ -72,6 +72,6 @@
 ;; -----------------------------------------------------------------------------
 (ert-deftest test-spacemacs-html-export ()
   (unwind-protect (spacemacs/publish-doc)
-    (delete-directory (concat spacemacs-start-directory
+    (delete-directory (concat spacemacs-data-directory
                               "export/")
                       t)))

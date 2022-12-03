@@ -3367,7 +3367,7 @@ Improve loading robustness:
 - Add an error message when the minimal Emacs version is not met
   (thanks Immortalin)
 - Add =spacemacs/recompile-elpa= interactive function (thanks to justbur)
-- Add =user-emacs-directory= in =async-start= (thanks to brabalan)
+- Add =spacemacs-data-directory= in =async-start= (thanks to brabalan)
 - Set =ad-redefinition-action= to =accept=
 - Enable distinction between ~C-i~ and ~TAB~ (thanks to justbur)
 - Move =evilified-state= library to local package of =spacemacs= layer

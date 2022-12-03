@@ -87,7 +87,7 @@ The global value can be overridden for each package by supplying the
   :group 'quelpa
   :type 'hook)
 
-(defcustom quelpa-dir (expand-file-name "quelpa" user-emacs-directory)
+(defcustom quelpa-dir (expand-file-name "quelpa" spacemacs-data-directory)
   "Where quelpa builds and stores packages."
   :group 'quelpa
   :type 'string)
