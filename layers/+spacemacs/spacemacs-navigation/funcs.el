@@ -414,7 +414,7 @@ in the window where the Symbol Highlight Transient State was closed."
 (defun spacemacs/open-junk-file (&optional arg)
   "Create a junk file with the initial name that's based on the variable
 `open-junk-file-format'
-`~/.emacs.d/.cache/junk/%Y/%m/%d-%H%M%S.'
+`~/.emacs.d.distros/spacemacs/.cache/junk/%Y/%m/%d-%H%M%S.'
 
 Or erase the name and open an existing junk file.
 

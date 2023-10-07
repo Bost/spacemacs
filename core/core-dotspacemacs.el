@@ -90,7 +90,7 @@ EXPERIMENTAL.org at the root of the git repository."
 portable dumper in the cache directory under dumps sub-directory.
 To load it when starting Emacs add the parameter `--dump-file'
 when invoking Emacs 27.1 executable on the command line, for instance:
-./emacs --dump-file=$HOME/.emacs.d/.cache/dumps/spacemacs-27.1.pdmp"
+./emacs --dump-file=$HOME/.emacs.d.distros/spacemacs/.cache/dumps/spacemacs-27.1.pdmp"
   'string
   'spacemacs-dotspacemacs-init)
 
@@ -593,7 +593,7 @@ restricts line-number to the specified list of major-mode."
 (spacemacs|defc dotspacemacs-server-socket-dir nil
   "Set the emacs server socket location.
 If nil, uses whatever the Emacs default is,
-otherwise a directory path like \"~/.emacs.d/server\".
+otherwise a directory path like \"~/.emacs.d.distros/spacemacs/server\".
 Has no effect if `dotspacemacs-enable-server' is nil."
   '(choice (const nil) string)
   'spacemacs-dotspacemacs-init)

@@ -1418,7 +1418,7 @@ discovery."
   (let ((search-paths (append
                        ;; layers shipped with spacemacs
                        (list configuration-layer-directory)
-                       ;; layers in private folder ~/.emacs.d/private
+                       ;; layers in private folder ~/.emacs.d.distros/spacemacs/private
                        (list spacemacs-private-directory)
                        ;; layers in dotdirectory
                        ;; this path may not exist, so check if it does

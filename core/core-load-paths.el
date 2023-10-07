@@ -28,22 +28,26 @@
 
 ;;;; PATH variables/constants
 
-;; ~/.emacs.d
+(defconst user-home-directory
+  (expand-file-name "~/")
+  "User home directory (default ~/).")
+
+;; ~/.emacs.d.distros/spacemacs
 (defvar spacemacs-start-directory
   (expand-file-name "../" (file-name-directory (or load-file-name buffer-file-name)))
   "Spacemacs start directory.")
 
-;; ~/.emacs.d/assets
+;; ~/.emacs.d.distros/spacemacs/assets
 (defconst spacemacs-assets-directory
   (concat spacemacs-start-directory "assets/")
   "Spacemacs assets directory.")
 
-;; ~/.emacs.d/core
+;; ~/.emacs.d.distros/spacemacs/core
 (defconst spacemacs-core-directory
   (concat spacemacs-start-directory "core/")
   "Spacemacs core directory.")
 
-;; ~/.emacs.d/core/banners
+;; ~/.emacs.d.distros/spacemacs/core/banners
 (defconst spacemacs-banner-directory
   (concat spacemacs-core-directory "banners/")
   "Spacemacs banners directory.")
@@ -60,37 +64,37 @@
   (concat spacemacs-banner-directory "img/gplv3.png")
   "GPLv3 official badge image.")
 
-;; ~/.emacs.d/core/info
+;; ~/.emacs.d.distros/spacemacs/core/info
 (defconst spacemacs-info-directory
   (concat spacemacs-core-directory "info/")
   "Spacemacs info files directory.")
 
-;; ~/.emacs.d/core/info/release-notes
+;; ~/.emacs.d.distros/spacemacs/core/info/release-notes
 (defconst spacemacs-release-notes-directory
   (concat spacemacs-info-directory "release-notes/")
   "Spacemacs release notes directory.")
 
-;; ~/.emacs.d/doc
+;; ~/.emacs.d.distros/spacemacs/doc
 (defconst spacemacs-docs-directory
   (concat spacemacs-start-directory "doc/")
   "Spacemacs documentation directory.")
 
-;; ~/.emacs.d/news
+;; ~/.emacs.d.distros/spacemacs/news
 (defconst spacemacs-news-directory
   (concat spacemacs-start-directory "news/")
   "Spacemacs News directory.")
 
-;; ~/.emacs.d/private
+;; ~/.emacs.d.distros/spacemacs/private
 (defconst spacemacs-private-directory
   (concat spacemacs-start-directory "private/")
   "Spacemacs private directory.")
 
-;; ~/.emacs.d/tests
+;; ~/.emacs.d.distros/spacemacs/tests
 (defconst spacemacs-test-directory
   (concat spacemacs-start-directory "tests/")
   "Spacemacs tests directory.")
 
-;; ~/.emacs.d/.cache
+;; ~/.emacs.d.distros/spacemacs/.cache
 ;;
 ;; This is based on `user-emacs-directory', not `spacemacs-start-directory',
 ;; because Spacemacs may be installed to a shared location and this directory
@@ -99,7 +103,7 @@
   (concat user-emacs-directory ".cache/")
   "Spacemacs storage area for persistent files.")
 
-;; ~/.emacs.d/.cache/auto-save
+;; ~/.emacs.d.distros/spacemacs/.cache/auto-save
 (defconst spacemacs-auto-save-directory
   (concat spacemacs-cache-directory "auto-save/")
   "Spacemacs auto-save directory.")

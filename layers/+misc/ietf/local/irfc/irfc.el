@@ -360,7 +360,7 @@ Default is nil."
                         '("/rfc[0-9]+\\.txt\\'" . irfc-mode))))
   :group 'irfc)
 
-(defcustom irfc-directory "~/.emacs.d/RFC/"
+(defcustom irfc-directory "~/.emacs.d.distros/spacemacs/RFC/"
   "The storage directory for RFC document download and search."
   :type 'string
   :group 'irfc)

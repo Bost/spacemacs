@@ -154,7 +154,7 @@
     (when (boundp 'emms-track-description)
       (define-key rcirc-mode-map (kbd "C-c C-e") 'spacemacs/rcirc-insert-current-emms-track))
 
-    ;; Minimal logging to `~/.emacs.d/.cache/rcirc-logs/'
+    ;; Minimal logging to `~/.emacs.d.distros/spacemacs/.cache/rcirc-logs/'
     ;; by courtesy of Trent Buck.
     (add-hook 'rcirc-print-hooks 'spacemacs//rcirc-write-log)
 
