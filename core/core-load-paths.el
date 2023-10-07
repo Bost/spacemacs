@@ -31,6 +31,10 @@
 
 ;;;; PATH variables/constants
 
+(defconst user-home-directory
+  (expand-file-name "~/")
+  "User home directory (default ~/).")
+
 ;; The root directory of Spacemacs, typically ~/.emacs.d.
 ;; This is computed relative to the location of this file, so it works even if
 ;; Spacemacs is installed in a non-standard location.

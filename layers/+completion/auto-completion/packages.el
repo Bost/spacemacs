@@ -315,9 +315,10 @@
                                   dotspacemacs-directory)))
                 (when (file-accessible-directory-p snippet-dir)
                   snippet-dir)))))
-      ;; ~/.emacs.d/layers/auto-completion/snippets
+      (setq yas-snippet-dirs nil)
+      ;; ~/.emacs.d.distros/spacemacs/layers/auto-completion/snippets
       (add-to-list 'yas-snippet-dirs spacemacs-layer-snippets-dir)
-      ;; ~/.emacs.d/private/snippets
+      ;; ~/.emacs.d.distros/spacemacs/private/snippets
       (when (file-exists-p emacs-directory-snippets-dir)
         (add-to-list 'yas-snippet-dirs emacs-directory-snippets-dir))
       ;; ~/.spacemacs.d/snippets

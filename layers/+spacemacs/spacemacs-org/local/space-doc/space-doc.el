@@ -20,7 +20,7 @@
 ;; For example, the link:
 ;;  https://github.com/syl20bnr/spacemacs/blob/develop/layers/org/README.org#lnk
 ;; Will be handled similary to as if it was:
-;; file:~/.emacs.d/layers/org/README.org::*links
+;; file:~/.emacs.d.distros/spacemacs/layers/org/README.org::*links
 ;; Also the `space-doc' mode will be applied.
 
 ;; This program is free software; you can redistribute it and/or modify
