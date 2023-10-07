@@ -642,7 +642,7 @@ restricts line-number to the specified list of major-mode."
 (spacemacs|defc dotspacemacs-server-socket-dir nil
   "Set the emacs server socket location.
 If nil, uses whatever the Emacs default is,
-otherwise a directory path like \"~/.emacs.d/server\".
+otherwise a directory path like \"~/.emacs.d.distros/spacemacs/server\".
 Has no effect if `dotspacemacs-enable-server' is nil."
   '(choice (const nil) string)
   'spacemacs-dotspacemacs-init)
