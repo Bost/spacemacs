@@ -1,0 +1,5 @@
+#+begin_src fish :results replace output
+set ptrn '<M-return>|<S-tab>|<S-return>|<M-return>|<C-tab>|<C-iso-lefttab>|<C-tab>|<C-iso-lefttab>|<C-tab>|<C-iso-lefttab>|<s-return>|<C-return>|<C-s-268632070>|<S-left>|<S-down>|<S-up>|<S-right>|<S-down>|<S-up>|<S-left>|<S-right>|<C-wheel-up>|<C-wheel-down>|<C-return>|<C-tab>|<C-iso-lefttab>|<C-return>|<S-return>'
+# pwd
+rg $ptrn /home/bost/.emacs.d.distros/spacemacs
+#+end_src
