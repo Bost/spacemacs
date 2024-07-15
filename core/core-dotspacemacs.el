@@ -53,17 +53,17 @@ their configuration.")
 - Otherwise use `spacemacs-data-directory' if it exists.")
 
 (defconst dotspacemacs-filepath
-  (let* ((spacemacs-init
-          (expand-file-name ".spguimacs" user-home-directory)))
-      (if (file-regular-p spacemacs-init)
-          spacemacs-init
-        (let ((fallback-init (expand-file-name "/init.el"
-                                               spacemacs-data-directory)))
-          (if (file-regular-p fallback-init)
-              fallback-init
-            ;; TODO a bug here. The spacemacs-init is not a regular file at this
-            ;; point. There's no reason to use it.
-            spacemacs-init))))
+  (let* ((spacemacs-dir-env (getenv "SPGUIMACSDIR"))
+         (spacemacs-init (if spacemacs-dir-env
+                             (concat (file-name-as-directory spacemacs-dir-env)
+                                     "init.el")
+                           "~/.spguimacs")))
+    (if (file-regular-p spacemacs-init)
+        spacemacs-init
+      (let ((fallback-init "~/.spguimacs.d/init.el"))
+        (if (file-regular-p fallback-init)
+            fallback-init
+          spacemacs-init))))
   "Filepath to Spacemacs configuration file (defaults to ~/.spguimacs).
 - If environment variable SPGUIMACSDIR is set and SPGUIMACSDIR/init.el
   exists, use that value.
