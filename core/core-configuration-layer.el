@@ -1479,14 +1479,32 @@ USEDP if non-nil indicates that made packages are used packages."
 (configuration-layer//system-package-p \\='emacs-dash) ; => nil
 (configuration-layer//system-package-p \\='dash) ; => <a list is returned>
 "
-  (or
-   ;; `find' doesn't work. It's an alias for `cl-find' in 'cl.el'.
-   ;; `member' is a built-in function in C source code.
-   (member (symbol-name pkg-symbol) my=system-packages)
-   (if-let ((pkg-lst (alist-get pkg-symbol package-alist)))
-       (string-prefix-p
-        "/gnu"
-        (package-desc-dir (car pkg-lst))))))
+  (let* ((f "[system-package-p]")
+         (phase 'null)
+         (pkg-name pkg-symbol)
+         (result (or
+                  ;; `find' doesn't work. It's an alias for `cl-find' in 'cl.el'.
+                  ;; `member' is a built-in function in C source code.
+                  (member (symbol-name pkg-symbol) my=system-packages)
+                  (if-let ((pkg-lst (alist-get pkg-symbol package-alist)))
+                      (string-prefix-p
+                       "/gnu"
+                       (package-desc-dir (car pkg-lst)))))))
+    (when
+        (and (not result)
+             (or
+              (eq pkg-name 'treemacs-magit) ;; part of emacs-treemacs-extra
+              (eq pkg-name 'git-commit)     ;; part of emacs-magit
+              ))
+      (spacemacs-buffer/message
+       "xxxxx %s: %s %s is a part of a Guix package and should be auto-discovered"
+       phase f pkg-name)
+
+      ;; (spacemacs-buffer/message
+      ;;  "xxxxx %s: %s (length load-path): %s\n%s\n"
+      ;;  phase f (length load-path) (pp load-path))
+      )
+    result))
 
 (defun configuration-layer//filter-distant-packages
     (packages usedp &optional predicate)
@@ -1954,15 +1972,6 @@ RNAME is the name symbol of another existing layer."
           (cond
            ((or (null pkg) (eq 'elpa location))
             (cond
-             ((or
-               (eq pkg-name 'treemacs-magit) ;; src/extra
-               (eq pkg-name 'treemacs-icons) ;; src/elisp
-               )
-              (message "xxxxx %s pkg-name %s is a part of a Guix package and should be auto-discovered" f pkg-name)
-              (configuration-layer//install-from-elpa pkg-name)
-              (when pkg (oset pkg :lazy-install nil))
-              )
-
              (t
               (configuration-layer//install-from-elpa pkg-name)
               (when pkg (oset pkg :lazy-install nil)))))
@@ -2043,12 +2052,10 @@ RNAME is the name symbol of another existing layer."
       ;; installation
       (when upkg-names
         (spacemacs-buffer/set-mode-line "Installing packages..." t)
-        (let ((delayed-warnings-backup delayed-warnings-list))
-          (spacemacs-buffer/message
-           (format "Found %s new package(s) to install...\n" (length upkg-names)))
-
-          (spacemacs-buffer/append
-           (format "Found %s new package(s) to install...\n" (length upkg-names)))
+        (let ((delayed-warnings-backup delayed-warnings-list)
+              (msg (format "Found %s new package(s) to install...\n" (length upkg-names))))
+          (spacemacs-buffer/message msg)
+          (spacemacs-buffer/append msg)
 
           (configuration-layer/retrieve-package-archives)
           (spacemacs//redisplay)
@@ -2269,7 +2276,6 @@ or in the default profile if the PROFILE-PATH is not specified."
 (defun configuration-layer//configure-packages (packages)
   "Configure all passed PACKAGES honoring the steps order."
   (spacemacs/init-progress-bar (length packages))
-  ;; (spacemacs-buffer/message "load-path:\n%s" load-path)
 
   (let* ((phase 'bootstrap))
     (spacemacs-buffer/message "+ Configuring %s packages ..." phase)
@@ -2357,7 +2363,15 @@ or in the default profile if the PROFILE-PATH is not specified."
                       (oref pkg :location)
                       (car (oref pkg :owners)))))
             (when dir
-              (add-to-list 'load-path dir)))
+              ;; (spacemacs-buffer/message
+              ;;  "%s: [configuration-layer//configure-packages-2] (length load-path): %s\n%s\n"
+              ;;  phase (length load-path) load-path)
+              (spacemacs-buffer/message
+               "%s: [configuration-layer//configure-packages-2] (add-to-list 'load-path %s)"
+               phase dir)
+              ;; (append-to-list 'load-path dir)
+              (add-to-list 'load-path dir)
+              ))
           ;; configuration
           (unless (memq (oref pkg :location) '(local site built-in))
             (configuration-layer//activate-package pkg-name))
@@ -2702,8 +2716,36 @@ to select one."
          "\nEmacs has to be restarted for the changes to take effect.\n")))))
 
 (defun foo ()
-  (package--get-activatable-pkg 'lv)
-  (package-activate-1 (package--get-activatable-pkg 'lv) nil 'deps)
+  ;; rm -rf eln-cache/
+  ;; ls -d1 elpa/29.4/develop/lsp-mode-*/
+  ;; ls -d1 elpa/29.4/develop/magit-section-*/
+  ;; ls -d1 elpa/29.4/develop/magit-popup-*/
+  ;; ls -d1 elpa/29.4/develop/treemacs-magit-*/
+  ;; ls -d1 elpa/29.4/develop/orgit-forge-*/
+  ;; ls -d1 elpa/29.4/develop/orgit-*/
+  ;; ls -d1 elpa/29.4/develop/forge-*/
+  ;; ls -d1 elpa/29.4/develop/git-commit-*/
+  ;; ls -d1 elpa/29.4/develop/with-editor-*/
+
+  ;; rm -rf elpa/29.4/develop/lsp-mode-*/
+  ;; rm -rf elpa/29.4/develop/magit-section-*/
+  ;; rm -rf elpa/29.4/develop/magit-popup-*/
+  ;; rm -rf elpa/29.4/develop/treemacs-magit-*/
+  ;; rm -rf elpa/29.4/develop/orgit-forge-*/
+  ;; rm -rf elpa/29.4/develop/orgit-*/
+  ;; rm -rf elpa/29.4/develop/forge-*/
+  ;; rm -rf elpa/29.4/develop/git-commit-*/
+  ;; rm -rf elpa/29.4/develop/with-editor-*/
+
+  ;; (configuration-layer//system-package-p 'with-editor)
+  ;; (configuration-layer//system-package-p 'git-commit)
+  ;; (alist-get 'git-commit package-alist)
+
+  (package--get-activatable-pkg 'helm)
+  (package--get-activatable-pkg 'helm-core)
+  (package--get-activatable-pkg 'reformatter)
+  (package--get-activatable-pkg 'with-editor)
+  (package-activate-1 (package--get-activatable-pkg 'with-editor) nil 'deps)
 
   (package--get-activatable-pkg 'hydra)
   (package-activate-1 (package--get-activatable-pkg 'hydra) nil 'deps)
@@ -2713,8 +2755,9 @@ to select one."
   ;; from package--get-activatable-pkg
   ;; the lv package is not present in the `package-alist', which is filled by
   ;; (package-load-all-descriptors)
-  (let* ((pkg-name 'lv)
+  (let* ((pkg-name 'with-editor)
          (pkg-descs (cdr (assq pkg-name package-alist))))
+    (message "dirs %s" (pp (cons package-user-dir package-directory-list)))
     (message "(length package-alist) %s" (length package-alist))
     ;; (message "pkg-descs %s; (listp pkg-descs) %s" pkg-descs (listp pkg-descs))
     (message "(length pkg-descs) %s" (length pkg-descs))
