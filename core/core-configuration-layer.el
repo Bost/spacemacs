@@ -2176,6 +2176,20 @@ RNAME is the name symbol of another existing layer."
     (cons (cl-subseq list 0 n)
           (partition n (nthcdr n list)))))
 
+;;; Prevent error:
+;;;   Lisp nesting exceeds 'max-lisp-eval-depth': 1601
+(defun partition (n list)
+  "Partition LIST into sublists of length N.
+(partition 3 '(1 2 3 4 5 6 7 8 9))
+;; => ((1 2 3) (4 5 6) (7 8 9))"
+  (let ((result '())
+        (current-list list))
+    (while current-list
+      (let ((sublist (cl-subseq current-list 0 (min n (length current-list)))))
+        (setq result (append result (list sublist)))
+        (setq current-list (nthcdr n current-list))))
+    result))
+
 (defun my=guix-installed-emacs-packages-all (&optional profile-path)
   "List emacs-related packages explicitly installed by Guix in the PROFILE-PATH
 or in the default profile if the PROFILE-PATH is not specified."
@@ -2195,6 +2209,29 @@ or in the default profile if the PROFILE-PATH is not specified."
         (process-file-shell-command cmd nil t)
         (sort-lines nil (point-min) (point-max))
         (buffer-string))))))
+
+;; ;;; Prevent error:
+;; ;;;   Lisp nesting exceeds 'max-lisp-eval-depth': 1601
+;; (defun my=guix-installed-emacs-packages-all (&optional profile-path)
+;;   "List emacs-related packages explicitly installed by Guix in the PROFILE-PATH
+;; or in the default profile if the PROFILE-PATH is not specified."
+;;   (let ((cmd (concat "guix package --profile="
+;;                      (or profile-path "$HOME/.guix-profile")
+;;                      " --list-installed='^emacs-|^spacemacs-rolling-release$'"
+;;                      " | awk '{print $1, $4}'")))
+;;     (spacemacs-buffer/message "cmd:\n%s\n" cmd)
+;;     (let ((output (with-temp-buffer
+;;                     (process-file-shell-command cmd nil t)
+;;                     (sort-lines nil (point-min) (point-max))
+;;                     (buffer-string))))
+;;       ;; Iterate over the split strings and build pairs manually
+;;       (let ((lines (split-string output "\n" t))
+;;             result)
+;;         (while lines
+;;           (let ((pair (list (pop lines) (pop lines))))
+;;             (push pair result)))
+;;         ;; Return the reversed result for correct order
+;;         (reverse result)))))
 
 (defun my=guix-installed-emacs-packages-paths (&optional profile-path)
   "
