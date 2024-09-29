@@ -26,13 +26,52 @@
 ;;; check which of the dependencies, ie. pre-built packages are already available in Guix.
 ;;;
 ;;; Create a package definitions, ie. recipes for missing dependencies
-;;; cd /home/bost/.local/share/spacemacs/elpa/28.2/develop
+;;; cd ~/.local/share/spacemacs/elpa/28.2/develop
 ;;; wp; rg --hidden --no-ignore-vcs -iN -g '*.{el}' ";{2,} (URL|Homepage|Version): (.*)" (pwd) | awk '{ print $1, "\n", $3 }'
 
 (setq my=packages nil)
 (setq my=dependencies nil)
 (setq my=implicit-packages nil)
 (setq my=retrieve-package-archives nil)
+
+;; `package-alist' is filled by (package-load-all-descriptors)
+;; which  looks for package subdirectories in:
+;;     `package-user-dir' ; i.e.:
+;;     ~/.emacs.d.distros/spguimacs/elpa/29.4/develop/
+;;     ; and in:
+;;     `package-directory-list' ; i.e.:
+;;     ~/.guix-profile/share/emacs/site-lisp
+;;     ~/.guix-profile/share/emacs/site-lisp/elpa ; this directory doesn't exist
+;; Where `package-load-list' controls which package subdirectories may be loaded.
+;; `package-load-all-descriptors' is adviced by `guix-emacs-load-package-descriptors'
+
+;; (assq 'dash package-alist)                       ; => (list ...)
+;; (assq 'ac-php-core package-alist)                ; => nil
+
+;; (setq package-alist nil)
+;; (package--alist)
+;; (assq 'ac-php-core package-alist)
+
+;; package-load-descriptor
+;; (let*
+;;     ((pkg-dir "/home/bost/.guix-profile/share/emacs/site-lisp/ac-php-core-2.7.0")
+;;      (pkg-file (expand-file-name (package--description-file pkg-dir)
+;;                                  pkg-dir))
+;;      (signed-file (concat pkg-dir ".signed")))
+;;   (message "pkg-file %s" pkg-file)
+;;   (message "(file-exists-p pkg-file) %s" (file-exists-p pkg-file)) ;; nil
+;;   (message "signed-file %s" signed-file)
+;;   (when (file-exists-p pkg-file)
+;;     (with-temp-buffer
+;;       (insert-file-contents pkg-file)
+;;       (goto-char (point-min))
+;;       (let ((pkg-desc (or (package-process-define-package
+;;                            (read (current-buffer)))
+;;                           (error "Can't find define-package in %s" pkg-file))))
+;;         (setf (package-desc-dir pkg-desc) pkg-dir)
+;;         (if (file-exists-p signed-file)
+;;             (setf (package-desc-signed pkg-desc) t))
+;;         pkg-desc))))
 
 ;; (bind-keys :map global-map ("C-s-<kp-subtract>" . my=reinstall-removed))
 (defun my=reinstall-removed ()
@@ -2823,21 +2862,6 @@ depends on it."
                      (if value (cl-pushnew pkg-sym value) (list pkg-sym))
                      result)))))
     result))
-
-;; `package-alist' is filled by (package-load-all-descriptors)
-;; which  looks for package subdirectories in
-;;     `package-user-dir' ;; /home/bost/.local/share/spacemacs/elpa/28.2/develop/
-;;     `package-directory-list'
-;; (
-;;  "/home/bost/.guix-home/profile/share/emacs/site-lisp/elpa"
-;;  "/home/bost/.guix-profile/share/emacs/site-lisp/elpa"
-;;  )
-;; Where `package-load-list' controls which package subdirectories may be loaded.
-;;
-;; `package-load-all-descriptors' is adviced by `guix-emacs-load-package-descriptors'
-;; /home/bost/.guix-home/profile/share/emacs/site-lisp ; contains treeview-1.1.1-0.d9c10fe
-;; /home/bost/.guix-profile/share/emacs/site-lisp      ; contains treeview-1.1.1-0.d9c10fe
-;; /gnu/store/6ix6k2cgx44ml92xr8z99jmyckxx2xm6-emacs-28.2/share/emacs/28.2/lisp
 
 (defun configuration-layer//get-implicit-packages-from-alist (packages)
   "Returns packages in `packages-alist' which are not found in PACKAGES."
