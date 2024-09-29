@@ -119,6 +119,89 @@
 (require 'core-spacemacs-buffer)
 (require 'core-load-paths)
 
+;; This function activates a newer version of a package if an older
+;; one was already activated.  It also loads a features of this
+;; package which were already loaded.
+(defun package-activate (package &optional force)
+  "Activate the package named PACKAGE.
+If FORCE is true, (re-)activate it if it's already activated.
+Newer versions are always activated, regardless of FORCE."
+  (if (string= package "ac-php-core")
+      (progn
+        (message "### [package-activate] package %s; force %s" package force)
+        (let ((pkg-desc (package--get-activatable-pkg package)))
+          (message "### [package-activate] pkg-desc %s" pkg-desc)
+          (cond
+           ;; If no such package is found, maybe it's built-in.
+           ((null pkg-desc)
+            (package-built-in-p package))
+           ;; If the package is already activated, just return t.
+           ((and (memq package package-activated-list) (not force))
+            t)
+           ;; Otherwise, proceed with activation.
+           (t (package-activate-1 pkg-desc nil 'deps))))
+        )
+
+    (let ((pkg-desc (package--get-activatable-pkg package)))
+      (cond
+       ;; If no such package is found, maybe it's built-in.
+       ((null pkg-desc)
+        (package-built-in-p package))
+       ;; If the package is already activated, just return t.
+       ((and (memq package package-activated-list) (not force))
+        t)
+       ;; Otherwise, proceed with activation.
+       (t (package-activate-1 pkg-desc nil 'deps))))))
+
+
+(defun package-activate-1 (pkg-desc &optional reload deps)
+  "Activate package given by PKG-DESC, even if it was already active.
+If DEPS is non-nil, also activate its dependencies (unless they
+are already activated).
+If RELOAD is non-nil, also `load' any files inside the package which
+correspond to previously loaded files."
+  (let* ((name (package-desc-name pkg-desc))
+         (pkg-dir (package-desc-dir pkg-desc)))
+    (when (string= name "company-php")
+      (message "### [package-activate-1] pkg-desc %s; reload %s; deps %s" pkg-desc reload deps)
+      (message "### [package-activate-1] name %s; pkg-dir %s" name pkg-dir))
+
+    (unless pkg-dir
+      (error "Internal error: unable to find directory for `%s'"
+             (package-desc-full-name pkg-desc)))
+    (catch 'exit
+      ;; Activate its dependencies recursively.
+      ;; FIXME: This doesn't check whether the activated version is the
+      ;; required version.
+      (when deps
+        (dolist (req (package-desc-reqs pkg-desc))
+          (unless (package-activate (car req))
+            (message "Unable to activate package `%s'.\nRequired package `%s-%s' is unavailable"
+                     name (car req) (package-version-join (cadr req)))
+            (throw 'exit nil))))
+      (if (listp package--quickstart-pkgs)
+          ;; We're only collecting the set of packages to activate!
+          (push pkg-desc package--quickstart-pkgs)
+        (when reload
+          (package--reload-previously-loaded pkg-desc))
+        (with-demoted-errors "Error loading autoloads: %s"
+          (load (package--autoloads-file-name pkg-desc) nil t))
+        ;; FIXME: Since 2013 (commit 4fac34cee97a), the autoload files take
+        ;; care of changing the `load-path', so maybe it's time to
+        ;; remove this fallback code?
+        (unless (or (member (file-name-as-directory pkg-dir) load-path)
+                    (member (directory-file-name pkg-dir) load-path))
+          (add-to-list 'load-path pkg-dir)))
+      ;; Add info node.
+      (when (file-exists-p (expand-file-name "dir" pkg-dir))
+        ;; FIXME: not the friendliest, but simple.
+        (require 'info)
+        (info-initialize)
+        (add-to-list 'Info-directory-list pkg-dir))
+      (push name package-activated-list)
+      ;; Don't return nil.
+      t)))
+
 (defvar configuration-layer--refresh-package-timeout dotspacemacs-elpa-timeout
   "Timeout in seconds to reach a package archive page.")
 
@@ -1517,6 +1600,7 @@ USEDP if non-nil indicates that made packages are used packages."
 (configuration-layer//system-package-p \"some-string\") ; => error
 (configuration-layer//system-package-p \\='emacs-dash) ; => nil
 (configuration-layer//system-package-p \\='dash) ; => <a list is returned>
+(configuration-layer//system-package-p \\='ac-php-core)
 "
   (let* ((f "[system-package-p]")
          (phase 'null)
