@@ -40,6 +40,10 @@
     rainbow-delimiters
     (term-cursor :location (recipe :fetcher github :repo "h0d/term-cursor.el"))
     volatile-highlights
+    (select-yanked-text :location
+                        "/home/bost/dev/select-yanked-text/"
+                        ;; (recipe :fetcher github :repo "emacsmirror/hide-comnt")
+                        )
     writeroom-mode))
 
 
@@ -192,6 +196,31 @@
       (vhl/install-extension 'undo-tree)
       (vhl/load-extension 'undo-tree))
     (spacemacs|hide-lighter volatile-highlights-mode)))
+
+(defun spacemacs-editing-visual/init-select-yanked-text ()
+  (use-package select-yanked-text
+    :defer t
+    :init
+    (spacemacs|add-toggle select-yanked-text
+      :mode select-yanked-text-mode
+      :documentation "select-yanked-text"
+      :evil-leader "thx")
+
+    ;; volatile-highlights is redundant with built-in highlighting in occur.  In
+    ;; Emacs 29, it starts to cause errors.  See
+    ;; https://github.com/k-talo/volatile-highlights.el/issues/26
+    (setq st/use-occur-extension-p (< emacs-major-version 28))
+
+    (select-yanked-text-mode t)
+    :config
+    ;; additional extensions
+    (with-eval-after-load 'simple
+      (vhl/define-extension 'yank
+                            'yank-pop)
+      (st-install-extension 'yank)
+      (st-load-extension 'yank))
+
+    (spacemacs|hide-lighter select-yanked-text-mode)))
 
 (defun spacemacs-editing-visual/init-writeroom-mode ()
   (use-package writeroom-mode
