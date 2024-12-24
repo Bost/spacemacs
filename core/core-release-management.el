@@ -109,6 +109,9 @@ Update `spacemacs-new-version' variable if any new version has been
 found."
   (interactive "P")
   (cond
+   ((string-prefix-p "/gnu/store" spacemacs-start-directory)
+    (message (concat "Skipping check for new version "
+                     "(reason: started from /gnu/store)")))
    ((and (not force)
          (not dotspacemacs-check-for-update))
     (message "Skipping check for new version (reason: dotfile)"))
