@@ -29,6 +29,7 @@
 (require 'warnings)
 (require 'help-mode)
 (require 'core-command-line)
+(require 'core-guix)
 (require 'core-dotspacemacs)
 (require 'core-funcs)
 (require 'core-progress-bar)
@@ -120,11 +121,12 @@ subdirectory of ROOT is used."
 
 (defun configuration-layer/get-elpa-package-install-directory (pkg)
   "Return the install directory of elpa PKG. Return nil if it is not found."
-  (let ((elpa-dir package-user-dir))
-    (when (file-exists-p elpa-dir)
-      (let* ((pkg-match (concat "\\`" (symbol-name pkg) "-[0-9]+"))
-             (dir (car (directory-files elpa-dir 'full pkg-match))))
-        (when dir (file-name-as-directory dir))))))
+  (let* ((pkg-name (symbol-name pkg)))
+    (concat
+     (cadar (seq-filter
+             (lambda (it) (string= (car it) (concat "emacs-" pkg-name)))
+             guix-installed-emacs-packages))
+     "/share/emacs/site-lisp/")))
 
 (defvar configuration-layer-pre-load-hook nil
   "Hook executed at the beginning of configuration loading.")
@@ -1001,7 +1003,7 @@ a new object."
           (if (or (memq (oref pkg location) '(built-in local site))
                   (stringp (oref pkg location)))
               (princ ".\n")
-            (if (not (package-installed-p pkg-symbol))
+            (if (not (guix-package-installed-p pkg-symbol))
                 (princ " but it is not yet installed.\n")
               (princ ", it is currently installed ")
               (if (featurep pkg-symbol)
@@ -1252,7 +1254,7 @@ USEDP if non-nil indicates that made packages are used packages."
                        (lambda (p)
                          (let ((pkg (configuration-layer/get-package p)))
                            (or (not (eq layer-name (car (oref pkg owners))))
-                               (null (package-installed-p
+                               (null (guix-package-installed-p
                                       (oref pkg name))))))
                        package-names)
                       :initial-value t))))
@@ -1299,6 +1301,7 @@ PREDICATE is an additional expression that eval to a boolean."
      (let ((pkg (configuration-layer/get-package x)))
        (if pkg
            (and (cfgl-package-distant-p pkg)
+                (not (guix-system-package-p (oref pkg name)))
                 (or (null usedp)
                     (cfgl-package-used-p pkg t))
                 (or (null predicate)
@@ -1704,7 +1707,7 @@ RNAME is the name symbol of another existing layer."
              not-inst-count)
      t)
     (spacemacs//redisplay)
-    (unless (and (package-installed-p pkg-name min-version)
+    (unless (and (guix-package-installed-p pkg-name min-version)
                  (not (and (package-built-in-p pkg-name)
                            (not (eq location 'built-in)))))
       (condition-case-unless-debug err
@@ -1844,7 +1847,7 @@ RNAME is the name symbol of another existing layer."
       (dolist
           (dep (configuration-layer//get-package-deps-from-archive
                 pkg-name))
-        (if (package-installed-p (car dep) (cadr dep))
+        (if (guix-package-installed-p (car dep) (cadr dep))
             (configuration-layer//activate-package (car dep))
           (configuration-layer//install-from-elpa (car dep))))
       (if pkg-desc
@@ -1895,7 +1898,7 @@ RNAME is the name symbol of another existing layer."
                           (package-built-in-p x)
                           (not (eq 'built-in (oref pkg location)))
                           (not (assq x package-alist)))
-                     (not (package-installed-p x min-version)))))))
+                     (not (guix-package-installed-p x min-version)))))))
 
 (defun configuration-layer//get-package-recipe (pkg-name)
   "Return the recipe for PKG-NAME if it has one."
@@ -1905,7 +1908,7 @@ RNAME is the name symbol of another existing layer."
         (when (and (listp location) (eq 'recipe (car location)))
           (cons pkg-name (cdr location)))))))
 
-(defun configuration-layer//new-version-available-p (pkg-name)
+(defun configuration-layer//new-version-available-upstream-p (pkg-name)
   "Return non nil if there is a new version available for PKG-NAME."
   (let ((recipe (configuration-layer//get-package-recipe pkg-name))
         (pkg (configuration-layer/get-package pkg-name))
@@ -1931,6 +1934,11 @@ RNAME is the name symbol of another existing layer."
                     configuration-layer--check-new-version-error-packages
                     :test #'eq)
         nil))))
+
+(defun configuration-layer//new-version-available-p (pkg-name)
+  "Return non nil if there is a new version available for PKG-NAME."
+  (unless (guix-system-package-p pkg-name)
+    (configuration-layer//new-version-available-upstream-p pkg-name)))
 
 (defun configuration-layer//get-packages-to-update (pkg-names)
   "Return a filtered list of PKG-NAMES to update."
@@ -2166,7 +2174,9 @@ to update."
   (configuration-layer/retrieve-package-archives nil 'force)
   (setq configuration-layer--check-new-version-error-packages nil)
   (let* ((distant-packages (configuration-layer//filter-distant-packages
-                            configuration-layer--used-packages t))
+                            configuration-layer--used-packages t
+                            ;; remove system packages installed by Guix
+                            (lambda (pkg) (not (guix-system-package-p (oref pkg name))))))
          (update-packages
           (configuration-layer//get-packages-to-update distant-packages))
          (skipped-count (length
@@ -2485,13 +2495,21 @@ Return nil when the package is built-in, and no other version is installed."
                               (package-desc-dir pkg-desc)
                             (package-desc-dir (car (alist-get pkg-desc package-alist))))))))
 
-(defun configuration-layer//package-delete (pkg-desc)
+(defun configuration-layer//package-delete-upstream (pkg-name)
   "Delete package PKG-DESC."
   ;; add force flag to ignore dependency checks in Emacs25
   (if (configuration-layer//system-package-p pkg-desc)
       (message "Would have removed package %s but this is a system package so it has not been changed."
                (package-desc-name pkg-desc))
     (package-delete pkg-desc t t)))
+
+(defun configuration-layer//package-delete (pkg-name)
+  "Delete package with name PKG-NAME."
+  (if (guix-system-package-p pkg-name)
+      ;; On Guix see `package-directory-list' where the entries are
+      ;; defined by configurations of 'guix home' and 'guix system'
+      (message "Can't remove package installed by GuixOS: %s" pkg-name)
+    (configuration-layer//package-delete-upstream pkg-name)))
 
 (defun configuration-layer/delete-orphan-packages (packages &optional include-system)
   "Delete PACKAGES if they are orphan.
@@ -2509,9 +2527,15 @@ have no need or power to remove)."
          (implicit-packages
           (configuration-layer//get-implicit-packages-from-alist
            packages))
+         (orphan-p
+          (if include-system #'always
+            (lambda (p)
+              (not
+               (configuration-layer//system-package-p p)
+               ;; (guix-system-package-p p)
+               ))))
          (orphans
-          (seq-filter (if include-system #'always
-                        (lambda (p) (not (configuration-layer//system-package-p p))))
+          (seq-filter orphan-p
                       (configuration-layer//get-orphan-packages
                        packages
                        implicit-packages
