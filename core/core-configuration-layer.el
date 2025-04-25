@@ -2511,6 +2511,14 @@ Return nil when the package is built-in, and no other version is installed."
       (message "Can't remove package installed by GuixOS: %s" pkg-name)
     (configuration-layer//package-delete-upstream pkg-name)))
 
+(defun configuration-layer//package-delete (pkg-name)
+  "Delete package with name PKG-NAME."
+  (if (guix-system-package-p pkg-name)
+      ;; On Guix see `package-directory-list' where the entries are
+      ;; defined by configurations of 'guix home' and 'guix system'
+      (message "Can't remove package installed by GuixOS: %s" pkg-name)
+    (configuration-layer//package-delete-upstream pkg-name)))
+
 (defun configuration-layer/delete-orphan-packages (packages &optional include-system)
   "Delete PACKAGES if they are orphan.
 
