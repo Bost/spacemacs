@@ -497,31 +497,30 @@ Removes the automatic guessing of the initial value based on thing at point. "
   (helm-grep-git-1 "" t))
 
  ;; Key bindings
-(defun dotted->proper (lst)
-  "Convert any dotted (improper) list LST into a proper list.
-All car’s of the cons cells in LST become elements in the result;
-if LST’s final cdr is non-nil, that object is appended as the last element."
-  (let (result)
-    (while (consp lst)
-      (push (car lst) result)
-      (setq lst (cdr lst)))
-    (when lst
-      ;; lst is now the final cdr, which was not a list
-      (push lst result))
-    (nreverse result)))
-
 (defmacro spacemacs||set-helm-key (keys func)
   "Define a key bindings for FUNC using KEYS.
 Ensure that helm is required before calling FUNC."
-  (let* ((actual-func (if (consp func) (cdr func) func))
+  (let* (
+         (func-consp (consp func))
+         (desc (if func-consp (caadr func) (symbol-name func)))
+         (actual-func (if func-consp (cdadr func) func))
          (func-name (intern (format "lazy-helm/%s" (symbol-name actual-func))))
-         (func-param (if (consp func)
-                         (if (bound-and-true-p byte-compile-current-file)
-                             ;; This is the case when `guix build ...` is running
-                             (dotted->proper `(,(car func) . ,func-name))
-                           `(,(car func) . ,func-name))
-                       func-name)))
+         (func-param (if func-consp `(,desc . ,func-name) func-name))
+         )
     `(progn
+       ;; ;; (message "keys : %s" ,keys)
+       ;; ;; (message "func : %s" ,func)
+       ;; ;; (message "(length func) : %s" ,(length func))
+       ;; (message "func-consp : %s" ,func-consp)
+       ;; ;; (message "(car func) : %s" ',(car func))
+       ;; ;; (message "(cdr func) : %s" ',(cdr func))
+       ;; ;; (message "(cadr func) : %s" ',(cadr func))
+       ;; ;; (message "(caadr func) : %s" ',(caadr func)) ;; desc
+       ;; ;; (message "(cdadr func) : %s" ',(cdadr func)) ;; actual-func
+       ;; (message "desc         : %s" ',desc)
+       ;; (message "actual-func  : %s" ',actual-func)
+       ;; (message "func-name    : %s" ',func-name)
+       ;; (message "func-param   : %s" ',func-param)
        (defun ,func-name ()
          ,(format "Wrapper to ensure that `helm' is loaded before calling %s."
                   (symbol-name actual-func))
