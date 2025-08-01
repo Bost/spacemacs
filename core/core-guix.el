@@ -84,7 +84,7 @@ PROFILE-PATH is not specified."
                (buffer-string))))))
       (spacemacs-buffer/message
        "Found %s Emacs packages installed by Guix" (length lst))
-      lst)))
+      (mapcar #'car lst))))
 
 ;; Pre-calculated list of "emacs-<package-name>" packages
 (setq
@@ -97,7 +97,7 @@ PROFILE-PATH is not specified."
 (setq guix-system-packages
       (mapcar
        (lambda (guix-pkg) (substring guix-pkg (length "emacs-")))
-       (mapcar #'car guix-installed-emacs-packages)))
+       guix-installed-emacs-packages))
 
 (defun guix-system-package-p (pkg-symbol)
   "Examples:
