@@ -53,15 +53,6 @@
 (unless (string= spacemacs--last-emacs-version emacs-version)
   (spacemacs//update-last-emacs-version))
 
-;; ---------------------------------------------------------------------------
-;; * Emacs Version Check
-;; ---------------------------------------------------------------------------
-;; Stop initialization if Emacs is too old.
-(when (not (version<= spacemacs-emacs-min-version emacs-version))
-  (error (concat "Your version of Emacs (%s) is too old. "
-                 "Spacemacs requires Emacs version %s or above.")
-         emacs-version spacemacs-emacs-min-version))
-
 ;; -------------------------------------------------------------------------
 ;; * Startup Speed Tweaks
 ;; -------------------------------------------------------------------------

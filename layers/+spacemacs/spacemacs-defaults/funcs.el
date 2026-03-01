@@ -923,14 +923,13 @@ variable."
   (when (fboundp 'outline-show-all)
     (outline-show-all)))
 
-(spacemacs|eval-until-emacs-min-version "31.0.50"
-  (defun spacemacs//ediff-delete-temp-files ()
-    "Delete the temp-files associated with the ediff buffers."
-    (let ((inhibit-interaction t))
-      (dolist (b ediff-session-registry)
-        (ignore-errors
-          (with-current-buffer b
-            (ediff-delete-temp-files)))))))
+(defun spacemacs//ediff-delete-temp-files ()
+  "Delete the temp-files associated with the ediff buffers."
+  (let ((inhibit-interaction t))
+    (dolist (b ediff-session-registry)
+      (ignore-errors
+        (with-current-buffer b
+          (ediff-delete-temp-files))))))
 
 (defvar spacemacs//ediff-saved-window-configuration nil)
 
