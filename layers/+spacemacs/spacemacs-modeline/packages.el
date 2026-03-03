@@ -20,6 +20,15 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Needed because of the `defpowerline' macro
+(eval-when-compile
+  (require 'powerline))
+(require 'powerline)
+
+;; Needed because of the `spaceline-define-segment' macro
+(eval-when-compile
+  (require 'spaceline))
+(require 'spaceline)
 
 (setq spacemacs-modeline-packages
       '(
