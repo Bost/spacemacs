@@ -20,6 +20,22 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Needed for the `spacemacs|define-custom-layout' macro
+(eval-and-compile
+  (load (expand-file-name
+         "../../+spacemacs/spacemacs-layouts/funcs.el"
+         (file-name-directory
+          (or load-file-name
+              buffer-file-name
+              (bound-and-true-p byte-compile-current-file)
+              (expand-file-name "packages.el" default-directory))))))
+(load (expand-file-name
+       "../../+spacemacs/spacemacs-layouts/funcs.el"
+       (file-name-directory
+        (or load-file-name
+            buffer-file-name
+            (bound-and-true-p byte-compile-current-file)
+            (expand-file-name "packages.el" default-directory)))))
 
 (defconst org-packages
   '(
@@ -130,6 +146,13 @@
     (spacemacs|use-package-add-hook org
       :post-config (add-to-list 'org-babel-load-languages '(mermaid . t)))))
 
+;; Originaly the macro is defined inside the org/init-org. The problem is, it is
+;; not expanded when the file is compiled. We need to move it outside of `org/init-org'
+(defmacro spacemacs|org-emphasize (fname char)
+  "Make function for setting the emphasis in org mode"
+  `(defun ,fname () (interactive)
+          (org-emphasize ,char)))
+
 (defun org/init-org ()
   (use-package org
     :defer t
@@ -169,11 +192,6 @@
 
     (with-eval-after-load 'org-indent
       (spacemacs|hide-lighter org-indent-mode))
-
-    (defmacro spacemacs|org-emphasize (fname char)
-      "Make function for setting the emphasis in org mode"
-      `(defun ,fname () (interactive)
-              (org-emphasize ,char)))
 
     ;; Follow the confirm and abort conventions
     (with-eval-after-load 'org-capture

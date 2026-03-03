@@ -20,6 +20,22 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Needed for `spacemacs|add-company-backends' macro
+(eval-and-compile
+  (load (expand-file-name
+         "../../+completion/auto-completion/funcs.el"
+         (file-name-directory
+          (or load-file-name
+              buffer-file-name
+              (bound-and-true-p byte-compile-current-file)
+              (expand-file-name "packages.el" default-directory))))))
+(load (expand-file-name
+       "../../+completion/auto-completion/funcs.el"
+       (file-name-directory
+        (or load-file-name
+            buffer-file-name
+            (bound-and-true-p byte-compile-current-file)
+            (expand-file-name "packages.el" default-directory)))))
 
 (defconst auto-completion-packages
   '(

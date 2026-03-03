@@ -20,6 +20,35 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Needed for the `spacemacs||set-helm-key' macro
+(eval-when-compile
+  (load (expand-file-name
+         "funcs.el"
+         (file-name-directory
+          (or load-file-name
+              buffer-file-name
+              (bound-and-true-p byte-compile-current-file)
+              (expand-file-name "packages.el" default-directory)))
+         )))
+(load (expand-file-name
+       "funcs.el"
+       (file-name-directory
+        (or load-file-name
+            buffer-file-name
+            (bound-and-true-p byte-compile-current-file)
+            (expand-file-name "packages.el" default-directory)))
+       ))
+
+;; Needed for the `evil-define-key' macro
+(eval-when-compile
+  (require 'evil-core))
+(require 'evil-core)
+
+;; Needed for the macros `evilified-state-evilify-map' and
+;; `evilified-state-evilify-map'
+(eval-when-compile
+  (require 'evil-evilified-state))
+(require 'evil-evilified-state)
 
 (defconst helm-packages
   '((avy-jump-helm-line

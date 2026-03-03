@@ -20,6 +20,24 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Needed because of the `evil-map' macro
+(eval-when-compile
+  (load (expand-file-name
+         "funcs.el"
+         (file-name-directory
+          (or load-file-name
+              buffer-file-name
+              (bound-and-true-p byte-compile-current-file)
+              (expand-file-name "packages.el" default-directory)))
+         )))
+(load (expand-file-name
+       "funcs.el"
+       (file-name-directory
+        (or load-file-name
+            buffer-file-name
+            (bound-and-true-p byte-compile-current-file)
+            (expand-file-name "packages.el" default-directory)))
+       ))
 
 (defconst spacemacs-bootstrap-packages
   '(

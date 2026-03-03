@@ -24,6 +24,11 @@
 
 ;;; Code:
 
+;; Needed for the `vhl/define-extension' macro
+(eval-when-compile
+  (require 'volatile-highlights))
+(require 'volatile-highlights)
+
 (defconst spacemacs-editing-visual-packages
   '(
     column-enforce-mode
