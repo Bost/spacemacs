@@ -33,6 +33,11 @@
 ;; Earlier Emacs versions do not load the early init file and do not initialize
 ;; the package manager before loading the init file, so this file is neither
 ;; needed nor loaded on those versions.
+
+;; Prevent warning: Unable to create `user-emacs-directory' ...
+(setq user-emacs-directory
+      (concat (getenv "XDG_DATA_HOME") "/spacemacs/spguix/"))
+
 (setq package-enable-at-startup nil)
 
 (load (concat (file-name-directory load-file-name)
