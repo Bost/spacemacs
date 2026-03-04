@@ -38,6 +38,18 @@
 (setq user-emacs-directory
       (concat (getenv "XDG_DATA_HOME") "/spacemacs/spguix/"))
 
+(setq default-frame-alist
+      `(
+        (icon-type
+         .
+         ,(concat (getenv "dotf")
+                  "/.emacs.d.distros/spacemacs/spguix/cfg/guix-logo.png"))
+        ;; (fullscreen . maximized)
+        ;; (internal-border-width . 0)
+        ;; (undecorated . t)
+        ;; (vertical-scroll-bars)
+        ))
+
 (setq package-enable-at-startup nil)
 
 (load (concat (file-name-directory load-file-name)
