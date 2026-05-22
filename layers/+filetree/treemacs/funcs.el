@@ -20,6 +20,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Needed for `treemacs-without-messages' macro
+(eval-when-compile
+  (require 'treemacs-logging))
 
 (defun spacemacs/treemacs-project-toggle ()
   "Toggle and add the current project to treemacs if not already added."
