@@ -646,8 +646,10 @@ To prevent package from being installed or uninstalled set the variable
                          (cl-pushnew pkg-name all-other-packages))))))
                (configuration-layer//filter-distant-packages
                 all-other-packages nil)))))
-      (configuration-layer/message ";;;; used-packages :\n%s\n" used-packages)
-      (configuration-layer/message ";;;; other-packages :\n%s\n" other-packages)
+      (configuration-layer/message
+       "%s used-packages :\n%s\n" (length used-packages) used-packages)
+      (configuration-layer/message
+       "%s other-packages :\n%s\n" (length other-packages) other-packages)
       (let ((packages (append used-packages other-packages)))
         (configuration-layer//install-packages packages)
         (when (and (or (eq 'used dotspacemacs-install-packages)

@@ -116,15 +116,6 @@ Examples:
   (or (package-installed-p package min-version)
       (guix-system--emacs-package-p package)))
 
-(defun foo ()
-  (let ((default-keyring "/gnu/store/kisdd81rn762aw2px5la0vzxhghgxxb4-emacs-30.2/share/emacs/30.2/etc/package-keyring.gpg"))
-    (condition-case-unless-debug error
-        (progn
-          (spacemacs-buffer/message ";;;; default-keyring : %s" default-keyring)
-          (guix-package-import-keyring default-keyring))
-      (error (message "Cannot import default keyring: %S" (cdr error)))))
-  )
-
 (defun guix-package-import-keyring (&optional file)
   "Import keys from FILE."
   (interactive "fFile: ")
