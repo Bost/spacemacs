@@ -95,11 +95,6 @@ The return value is nil if no font was found, non-nil otherwise."
 
 (defun spacemacs//set-default-font-from-dotfile ()
   "Set the `default' face based on `dotspacemacs-default-font'."
-
-  (message "### (functionp 'spacemacs|do-after-display-system-init) : %s" (functionp 'spacemacs|do-after-display-system-init))
-  (message "### (functionp #'spacemacs|do-after-display-system-init) : %s" (functionp #'spacemacs|do-after-display-system-init))
-  (message "### (fboundp #'spacemacs|do-after-display-system-init) : %s" (fboundp #'spacemacs|do-after-display-system-init))
-  (message "### (macrop 'spacemacs|do-after-display-system-init) : %s" (macrop 'spacemacs|do-after-display-system-init))
   (spacemacs|do-after-display-system-init
     (unless (spacemacs/set-default-font dotspacemacs-default-font)
       (spacemacs-buffer/warning
