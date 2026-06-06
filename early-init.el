@@ -36,14 +36,14 @@
 
 ;; Prevent warning: Unable to create `user-emacs-directory' ...
 (setq user-emacs-directory
-      (concat (getenv "XDG_DATA_HOME") "/spacemacs/spguix/"))
+      (concat (getenv "XDG_DATA_HOME") "/spacemacs/spgx/"))
 
 (setq default-frame-alist
       `(
         (icon-type
          .
          ,(concat (getenv "dotf")
-                  "/.emacs.d.distros/spacemacs/spguix/cfg/guix-logo.png"))
+                  "/.emacs.d.distros/spacemacs/spgx/cfg/guix-logo.png"))
         ;; (fullscreen . maximized)
         ;; (internal-border-width . 0)
         ;; (undecorated . t)

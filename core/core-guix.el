@@ -123,7 +123,7 @@ Examples:
   ;; (spacemacs-buffer/message ";;;; file : %s" file)
   (let ((context (epg-make-context 'OpenPGP)))
     (let (
-          (guix-package-gnupghome-dir (concat (getenv "XDG_DATA_HOME") "/spacemacs/spguix/elpa"))
+          (guix-package-gnupghome-dir (concat (getenv "XDG_DATA_HOME") "/spacemacs/spgx/elpa"))
           )
       ;; (spacemacs-buffer/message ";;;; guix-package-gnupghome-dir : %s" guix-package-gnupghome-dir)
       (when guix-package-gnupghome-dir
