@@ -38,7 +38,7 @@
 
 ;; (defvar package-gnupghome-dir
 ;;   nil ;; `nil' means: stick with GnuPG's default directory
-;;   ;; (concat (getenv "XDG_DATA_HOME") "/spacemacs/spguix/elpa")
+;;   ;; (concat (getenv "XDG_DATA_HOME") "/spacemacs/spgx/elpa")
 ;;   )
 
 (defvar configuration-layer--refresh-package-timeout dotspacemacs-elpa-timeout
@@ -601,6 +601,63 @@ refreshed during the current session."
         dotspacemacs-configuration-layers)
   (configuration-layer//load)
   (run-hooks 'configuration-layer-post-load-hook))
+
+(defun my-guix-system--emacs-package-p (pkg-symbol)
+  "Is PKG-SYMBOL an Emacs package installed by Guix?
+Examples:
+;; (and (my-guix-system--emacs-package-p \\='treemacs-magit) t) ; => nil
+;; (and (my-guix-system--emacs-package-p \\='git-commit) t)     ; => nil
+;; (and (my-guix-system--emacs-package-p \\='magit) t)          ; => t
+;; (and (my-guix-system--emacs-package-p \\='magit-section) t)  ; => t
+;; (and (my-guix-system--emacs-package-p \\='ace-link) t)  ; => t
+"
+  (message "[my-guix-system--emacs-package-p] pkg-symbol : %s" pkg-symbol)
+  (or
+   (member (symbol-name pkg-symbol) guix-system-packages)
+   (if-let ((pkg-lst (alist-get pkg-symbol package-alist)))
+       (string-prefix-p "/gnu" (package-desc-dir (car pkg-lst))))))
+
+(defun my-configuration-layer//filter-distant-packages
+    (packages usedp &optional predicate)
+  "Return the distant packages (ie to be intalled).
+If USEDP is non nil then returns only the used packages; if it is nil then
+return both used and unused packages.
+PREDICATE is an additional expression that eval to a boolean."
+  (cl-remove-if-not
+   (lambda (x)
+     (let ((pkg (configuration-layer/get-package x)))
+       (message "\n")
+       (message "pkg             : %s" pkg)
+       (message "(oref pkg name) : %s" (oref pkg name))
+       (if pkg
+           (and (let ((r (cfgl-package-distant-p pkg)))
+                  ;; (message "[and1] (cfgl-package-distant-p pkg)                     : %s" r)
+                  r)
+                (let ((r (not (my-guix-system--emacs-package-p (oref pkg name)))))
+                  (message "[and2] (my-guix-system--emacs-package-p (oref pkg name)) : %s" r) r)
+                (or (let ((r (null usedp)))
+                      ;; (message "[or11] (null %s)                                         : %s" usedp r)
+                      r)
+                    (let ((r (cfgl-package-used-p pkg t)))
+                      ;; (message "[or12] (cfgl-package-used-p pkg t)                       : %s" r)
+                      r))
+                (or (let ((r (null predicate)))
+                      ;; (message "[or21] (null %s)         %s" predicate r)
+                      r)
+                    (let ((r (funcall predicate pkg)))
+                      ;; (message "[or22] (funcall %s pkg)  %s" predicate r)
+                      r)))
+         (spacemacs-buffer/warning "Cannot find package for %s" x)
+         nil)))
+   packages))
+
+(defun my-x ()
+  (interactive)
+  (my-configuration-layer//filter-distant-packages
+   (list 'gptel-agent 'ace-link)
+   ;; configuration-layer--used-packages
+   t
+   (lambda (pkg) (not (oref pkg lazy-install)))))
 
 (defun configuration-layer//load ()
   "Actually load the layers.
