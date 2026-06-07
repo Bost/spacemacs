@@ -209,28 +209,49 @@ START-REGEXP and END-REGEXP are the boundaries of the text object."
        (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
        (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
 
-;; need to delay this macro since it relies on evil key maps to be defined
-(with-eval-after-load 'evil
-  (defmacro evil-map (state key seq)
-    "Map for a given STATE a KEY to a sequence SEQ of keys.
+;; ;; need to delay this macro since it relies on evil key maps to be defined
+;; (with-eval-after-load 'evil
+;;   (defmacro evil-map (state key seq)
+;;     "Map for a given STATE a KEY to a sequence SEQ of keys.
+
+;; Can handle recursive definition only if KEY is the first key of
+;; SEQ, and if KEY's binding in STATE is defined as a symbol in
+;; `evil-normal-state-map'.
+;; Example: (evil-map visual \"<\" \"<gv\")"
+;;     (let ((map (intern (format "evil-%S-state-map" state)))
+;;           (key-cmd (lookup-key evil-normal-state-map key)))
+;;       `(define-key ,map ,key
+;;                    (lambda ()
+;;                      (interactive)
+;;                      ,(if (string-equal key (substring seq 0 1))
+;;                           `(let ((orig-this-command this-command))
+;;                              (setq this-command ',key-cmd)
+;;                              (call-interactively ',key-cmd)
+;;                              (run-hooks 'post-command-hook)
+;;                              (setq this-command orig-this-command)
+;;                              (execute-kbd-macro ,(substring seq 1)))
+;;                         (execute-kbd-macro ,seq)))))))
+
+(defmacro evil-map (state key seq)
+  "Map for a given STATE a KEY to a sequence SEQ of keys.
 
 Can handle recursive definition only if KEY is the first key of
 SEQ, and if KEY's binding in STATE is defined as a symbol in
 `evil-normal-state-map'.
 Example: (evil-map visual \"<\" \"<gv\")"
-    (let ((map (intern (format "evil-%S-state-map" state)))
-          (key-cmd (lookup-key evil-normal-state-map key)))
-      `(define-key ,map ,key
-                   (lambda ()
-                     (interactive)
+  (let ((map-sym (intern (format "evil-%S-state-map" state))))
+    `(define-key ,map-sym ,key
+                 (lambda ()
+                   (interactive)
+                   (let ((key-cmd (lookup-key evil-normal-state-map ,key)))
                      ,(if (string-equal key (substring seq 0 1))
                           `(let ((orig-this-command this-command))
-                             (setq this-command ',key-cmd)
-                             (call-interactively ',key-cmd)
+                             (setq this-command key-cmd)
+                             (call-interactively key-cmd)
                              (run-hooks 'post-command-hook)
                              (setq this-command orig-this-command)
                              (execute-kbd-macro ,(substring seq 1)))
-                        (execute-kbd-macro ,seq)))))))
+                        `(execute-kbd-macro ,seq)))))))
 
 (defun spacemacs/diminish-hook (_)
   "Display diminished lighter in vanilla Emacs mode-line."

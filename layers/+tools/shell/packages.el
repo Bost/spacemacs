@@ -20,6 +20,18 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Neeed by macro: `spacemacs|use-package-add-hook'
+(require 'core-use-package-ext)
+
+;; Neeed by macro: `spacemacs//eat-for-shell-pop', `make-shell-pop-command'
+(eval-and-compile
+  (load (expand-file-name
+         "funcs.el"
+         (file-name-directory
+          (or load-file-name
+              buffer-file-name
+              (bound-and-true-p byte-compile-current-file)
+              (expand-file-name "packages.el" default-directory))))))
 
 (defconst shell-packages
   '(

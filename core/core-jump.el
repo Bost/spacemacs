@@ -105,4 +105,7 @@ They are in order: `spacemacs-jump-handlers',
 (with-eval-after-load 'evil
   (evil-set-command-property 'spacemacs/jump-to-definition :jump t))
 
+;; Define spacemacs|eval-until-emacs-min-version
+(eval-when-compile (require 'core-versions))
+
 (provide 'core-jump)

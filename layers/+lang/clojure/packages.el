@@ -20,6 +20,15 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Neeed by macro: `spacemacs|forall-clojure-modes'
+(eval-and-compile
+  (load (expand-file-name
+         "funcs.el"
+         (file-name-directory
+          (or load-file-name
+              buffer-file-name
+              (bound-and-true-p byte-compile-current-file)
+              (expand-file-name "packages.el" default-directory))))))
 
 (defconst clojure-packages
   '(

@@ -1,3 +1,4 @@
+;; -*- no-byte-compile: t -*-
 ;;; config.el --- spacemacs-org layer configuration file for Spacemacs.  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (c) 2012-2025 Sylvain Benner & Contributors
