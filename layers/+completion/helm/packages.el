@@ -20,6 +20,22 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Needed for the `spacemacs||set-helm-key' macro
+(eval-and-compile
+  (load (expand-file-name
+         "funcs.el"
+         (file-name-directory
+          (or load-file-name
+              buffer-file-name
+              (bound-and-true-p byte-compile-current-file)
+              (expand-file-name "packages.el" default-directory))))))
+
+;; Needed for the `evil-define-key' macro
+(require 'evil-core)
+
+;; Needed for the macros `evilified-state-evilify-map' and
+;; `evilified-state-evilify-map'
+(require 'evil-evilified-state)
 
 (defconst helm-packages
   '((avy-jump-helm-line
@@ -131,16 +147,16 @@
     ;; search with grep
     (spacemacs||set-helm-key "sgb"  spacemacs/helm-buffers-do-grep)
     (spacemacs||set-helm-key
-     "sgB" ("grep-search buffers w/ input" .
-            spacemacs/helm-buffers-do-grep-region-or-symbol))
+     "sgB" '("grep-search buffers w/ input" .
+             spacemacs/helm-buffers-do-grep-region-or-symbol))
     (spacemacs||set-helm-key "sgf"  spacemacs/helm-files-do-grep)
     (spacemacs||set-helm-key
-     "sgF" ("grep-search files w/ input" .
-            spacemacs/helm-files-do-grep-region-or-symbol))
+     "sgF" '("grep-search files w/ input" .
+             spacemacs/helm-files-do-grep-region-or-symbol))
     (spacemacs||set-helm-key "sgg"  spacemacs/helm-file-do-grep)
     (spacemacs||set-helm-key
-     "sgG" ("grep-search file w/ input" .
-            spacemacs/helm-file-do-grep-region-or-symbol))
+     "sgG" '("grep-search file w/ input" .
+             spacemacs/helm-file-do-grep-region-or-symbol))
     ;; various key bindings
     (spacemacs||set-helm-key "fel" helm-locate-library)
     (spacemacs||set-helm-key "hdx" spacemacs/describe-ex-command)
