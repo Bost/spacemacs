@@ -20,6 +20,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Neeed by macro: `defpowerline'
+(require 'powerline)
+
+;; Neeed by macro: `spaceline-define-segment'
+(require 'spaceline)
 
 (setq spacemacs-modeline-packages
       '(
