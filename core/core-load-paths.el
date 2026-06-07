@@ -115,7 +115,7 @@
 
 ;; Ensure that the cache directory exists before it is used.
 ;; The 'parents argument creates any necessary parent directories.
-(make-directory spacemacs-cache-directory 'parents)
+;; (make-directory spacemacs-cache-directory 'parents)
 
 
 ;;;; Load Paths
