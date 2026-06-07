@@ -29,6 +29,7 @@
 (require 'warnings)
 (require 'help-mode)
 (require 'core-command-line)
+(require 'core-guix)
 (require 'core-dotspacemacs)
 (require 'core-funcs)
 (require 'core-progress-bar)
@@ -120,11 +121,12 @@ subdirectory of ROOT is used."
 
 (defun configuration-layer/get-elpa-package-install-directory (pkg)
   "Return the install directory of elpa PKG. Return nil if it is not found."
-  (let ((elpa-dir package-user-dir))
-    (when (file-exists-p elpa-dir)
-      (let* ((pkg-match (concat "\\`" (symbol-name pkg) "-[0-9]+"))
-             (dir (car (directory-files elpa-dir 'full pkg-match))))
-        (when dir (file-name-as-directory dir))))))
+  (let* ((pkg-name (symbol-name pkg)))
+    (concat
+     (cadar (seq-filter
+             (lambda (it) (string= (car it) (concat "emacs-" pkg-name)))
+             guix-installed-emacs-packages))
+     "/share/emacs/site-lisp/")))
 
 (defvar configuration-layer-pre-load-hook nil
   "Hook executed at the beginning of configuration loading.")
@@ -572,7 +574,15 @@ refreshed during the current session."
                               aname) :warning)
                             'error)))))
             (let ((package-archives (list archive)))
-              (package-refresh-contents)))))
+              (let ((p ";;;; [222 package-refresh-contents]"))
+                ;; (spacemacs-buffer/replace-last-line
+                ;;  (format "%s package--initialized : %s" p package--initialized) t)
+                (spacemacs-buffer/replace-last-line
+                 (format "%s configuration-layer-rollback-directory : %s" p configuration-layer-rollback-directory) t)
+                (spacemacs-buffer/replace-last-line
+                 (format "%s package-user-dir : %s" p package-user-dir) t))
+              (guix-package-refresh-contents)))))
+      (spacemacs-buffer/replace-last-line ";;;; (package-read-all-archive-contents)" t)
       (package-read-all-archive-contents)
       (unless quiet (spacemacs-buffer/append "\n")))))
 
@@ -586,6 +596,63 @@ refreshed during the current session."
         dotspacemacs-configuration-layers)
   (configuration-layer//load)
   (run-hooks 'configuration-layer-post-load-hook))
+
+(defun my-guix-system--emacs-package-p (pkg-symbol)
+  "Is PKG-SYMBOL an Emacs package installed by Guix?
+Examples:
+;; (and (my-guix-system--emacs-package-p \\='treemacs-magit) t) ; => nil
+;; (and (my-guix-system--emacs-package-p \\='git-commit) t)     ; => nil
+;; (and (my-guix-system--emacs-package-p \\='magit) t)          ; => t
+;; (and (my-guix-system--emacs-package-p \\='magit-section) t)  ; => t
+;; (and (my-guix-system--emacs-package-p \\='ace-link) t)  ; => t
+"
+  (message "[my-guix-system--emacs-package-p] pkg-symbol : %s" pkg-symbol)
+  (or
+   (member (symbol-name pkg-symbol) guix-system-packages)
+   (if-let ((pkg-lst (alist-get pkg-symbol package-alist)))
+       (string-prefix-p "/gnu" (package-desc-dir (car pkg-lst))))))
+
+(defun my-configuration-layer//filter-distant-packages
+    (packages usedp &optional predicate)
+  "Return the distant packages (ie to be intalled).
+If USEDP is non nil then returns only the used packages; if it is nil then
+return both used and unused packages.
+PREDICATE is an additional expression that eval to a boolean."
+  (cl-remove-if-not
+   (lambda (x)
+     (let ((pkg (configuration-layer/get-package x)))
+       (message "\n")
+       (message "pkg             : %s" pkg)
+       (message "(oref pkg name) : %s" (oref pkg name))
+       (if pkg
+           (and (let ((r (cfgl-package-distant-p pkg)))
+                  ;; (message "[and1] (cfgl-package-distant-p pkg)                     : %s" r)
+                  r)
+                (let ((r (not (my-guix-system--emacs-package-p (oref pkg name)))))
+                  (message "[and2] (my-guix-system--emacs-package-p (oref pkg name)) : %s" r) r)
+                (or (let ((r (null usedp)))
+                      ;; (message "[or11] (null %s)                                         : %s" usedp r)
+                      r)
+                    (let ((r (cfgl-package-used-p pkg t)))
+                      ;; (message "[or12] (cfgl-package-used-p pkg t)                       : %s" r)
+                      r))
+                (or (let ((r (null predicate)))
+                      ;; (message "[or21] (null %s)         %s" predicate r)
+                      r)
+                    (let ((r (funcall predicate pkg)))
+                      ;; (message "[or22] (funcall %s pkg)  %s" predicate r)
+                      r)))
+         (spacemacs-buffer/warning "Cannot find package for %s" x)
+         nil)))
+   packages))
+
+(defun my-x ()
+  (interactive)
+  (my-configuration-layer//filter-distant-packages
+   (list 'gptel-agent 'ace-link)
+   ;; configuration-layer--used-packages
+   t
+   (lambda (pkg) (not (oref pkg lazy-install)))))
 
 (defun configuration-layer//load ()
   "Actually load the layers.
@@ -610,36 +677,40 @@ To prevent package from being installed or uninstalled set the variable
     (load (file-name-sans-extension package-quickstart-file) t nil nil t))
   ;; install and/or uninstall packages
   (when spacemacs-sync-packages
-    (let ((packages
-           (append
-            ;; install used packages
-            (configuration-layer//filter-distant-packages
-             configuration-layer--used-packages t
-             (lambda (pkg) (not (oref pkg lazy-install))))
-            ;; also install all other packages if requested
-            (when (eq 'all dotspacemacs-install-packages)
-              (let (all-other-packages)
-                (dolist (layer (configuration-layer/get-layers-list))
-                  (let ((configuration-layer--declared-layers-usedp nil)
-                        (configuration-layer--load-packages-files t))
-                    (configuration-layer/declare-layer layer)
-                    (let* ((obj (configuration-layer/get-layer layer))
-                           (pkgs (when obj (oref obj packages))))
-                      (configuration-layer/make-packages-from-layers
-                       (list layer))
-                      (dolist (pkg pkgs)
-                        (let ((pkg-name (if (listp pkg) (car pkg) pkg)))
-                          (cl-pushnew pkg-name all-other-packages))))))
-                (configuration-layer//filter-distant-packages
-                 all-other-packages nil))))))
-      (configuration-layer//install-packages packages)
-      (when (and (or (eq 'used dotspacemacs-install-packages)
-                     (eq 'used-only dotspacemacs-install-packages))
-                 (not configuration-layer-force-distribution)
-                 (not configuration-layer-exclude-all-layers)
-                 spacemacs-load-dotspacemacs
-                 (not (eq 'template spacemacs-load-dotspacemacs)))
-        (configuration-layer/delete-orphan-packages packages))))
+    (let ((used-packages
+           (configuration-layer//filter-distant-packages
+            configuration-layer--used-packages t
+            (lambda (pkg) (not (oref pkg lazy-install)))))
+
+          (other-packages
+           (when (eq 'all dotspacemacs-install-packages)
+             (let (all-other-packages)
+               (dolist (layer (configuration-layer/get-layers-list))
+                 (let ((configuration-layer--declared-layers-usedp nil)
+                       (configuration-layer--load-packages-files t))
+                   (configuration-layer/declare-layer layer)
+                   (let* ((obj (configuration-layer/get-layer layer))
+                          (pkgs (when obj (oref obj packages))))
+                     (configuration-layer/make-packages-from-layers
+                      (list layer))
+                     (dolist (pkg pkgs)
+                       (let ((pkg-name (if (listp pkg) (car pkg) pkg)))
+                         (cl-pushnew pkg-name all-other-packages))))))
+               (configuration-layer//filter-distant-packages
+                all-other-packages nil)))))
+      (configuration-layer/message
+       "%s used-packages :\n%s\n" (length used-packages) used-packages)
+      (configuration-layer/message
+       "%s other-packages :\n%s\n" (length other-packages) other-packages)
+      (let ((packages (append used-packages other-packages)))
+        (configuration-layer//install-packages packages)
+        (when (and (or (eq 'used dotspacemacs-install-packages)
+                       (eq 'used-only dotspacemacs-install-packages))
+                   (not configuration-layer-force-distribution)
+                   (not configuration-layer-exclude-all-layers)
+                   spacemacs-load-dotspacemacs
+                   (not (eq 'template spacemacs-load-dotspacemacs)))
+          (configuration-layer/delete-orphan-packages packages)))))
   ;; configure used packages
   (configuration-layer//configure-packages configuration-layer--used-packages)
   ;; evaluate layer variables a second time to override default values set in
@@ -1001,7 +1072,7 @@ a new object."
           (if (or (memq (oref pkg location) '(built-in local site))
                   (stringp (oref pkg location)))
               (princ ".\n")
-            (if (not (package-installed-p pkg-symbol))
+            (if (not (guix-package-installed-p pkg-symbol))
                 (princ " but it is not yet installed.\n")
               (princ ", it is currently installed ")
               (if (featurep pkg-symbol)
@@ -1252,7 +1323,7 @@ USEDP if non-nil indicates that made packages are used packages."
                        (lambda (p)
                          (let ((pkg (configuration-layer/get-package p)))
                            (or (not (eq layer-name (car (oref pkg owners))))
-                               (null (package-installed-p
+                               (null (guix-package-installed-p
                                       (oref pkg name))))))
                        package-names)
                       :initial-value t))))
@@ -1299,6 +1370,7 @@ PREDICATE is an additional expression that eval to a boolean."
      (let ((pkg (configuration-layer/get-package x)))
        (if pkg
            (and (cfgl-package-distant-p pkg)
+                (not (guix-system--emacs-package-p (oref pkg name)))
                 (or (null usedp)
                     (cfgl-package-used-p pkg t))
                 (or (null predicate)
@@ -1704,7 +1776,7 @@ RNAME is the name symbol of another existing layer."
              not-inst-count)
      t)
     (spacemacs//redisplay)
-    (unless (and (package-installed-p pkg-name min-version)
+    (unless (and (guix-package-installed-p pkg-name min-version)
                  (not (and (package-built-in-p pkg-name)
                            (not (eq location 'built-in)))))
       (condition-case-unless-debug err
@@ -1774,9 +1846,11 @@ RNAME is the name symbol of another existing layer."
             (window-height . 0.2)))))
     ;; ensure we have quelpa available first
     (configuration-layer//configure-quelpa)
+    (spacemacs-buffer/message "%s packages :\n%s\n" (length packages) packages)
     (let* ((upkg-names (configuration-layer//get-to-install-packages packages))
            (not-inst-count (length upkg-names))
            installed-count)
+      (spacemacs-buffer/message "%s upkg-names :\n%s\n" (length upkg-names) upkg-names)
       ;; installation
       (when upkg-names
         (spacemacs-buffer/set-mode-line "Installing packages..." t)
@@ -1822,6 +1896,9 @@ RNAME is the name symbol of another existing layer."
                   (append (nreverse built-in)
                           (nreverse bootstrap-pre)
                           (nreverse remaining)))
+            (spacemacs-buffer/message "(nreverse built-in) :\n%s\n" (nreverse built-in))
+            (spacemacs-buffer/message "(nreverse bootstrap-pre) :\n%s\n" (nreverse bootstrap-pre))
+            (spacemacs-buffer/message "(nreverse remaining) :\n%s\n" (nreverse remaining))
             (dolist (pkg-name sorted-upkg-names)
               (cl-incf installed-count)
               (let ((pkg (configuration-layer/get-package pkg-name)))
@@ -1844,7 +1921,7 @@ RNAME is the name symbol of another existing layer."
       (dolist
           (dep (configuration-layer//get-package-deps-from-archive
                 pkg-name))
-        (if (package-installed-p (car dep) (cadr dep))
+        (if (guix-package-installed-p (car dep) (cadr dep))
             (configuration-layer//activate-package (car dep))
           (configuration-layer//install-from-elpa (car dep))))
       (if pkg-desc
@@ -1887,15 +1964,22 @@ RNAME is the name symbol of another existing layer."
 
 (defun configuration-layer//get-to-install-packages (pkg-names)
   "Return a filtered list of PKG-NAMES to install."
-  (configuration-layer//filter-packages-with-deps
-   pkg-names (lambda (x)
-               (let* ((pkg (configuration-layer/get-package x))
-                      (min-version (when pkg (oref pkg min-version))))
-                 (or (and pkg
-                          (package-built-in-p x)
-                          (not (eq 'built-in (oref pkg location)))
-                          (not (assq x package-alist)))
-                     (not (package-installed-p x min-version)))))))
+  (let ((to-install-packages
+         (configuration-layer//filter-packages-with-deps
+          pkg-names
+          (lambda (x)
+            (let* ((pkg (configuration-layer/get-package x))
+                   (min-version (when pkg (oref pkg min-version))))
+              (and (and pkg
+                        (package-built-in-p x)
+                        (not (eq 'built-in (oref pkg location)))
+                        (not (assq x package-alist)))
+                   (not (guix-package-installed-p x min-version))))))))
+    (spacemacs-buffer/message "pkg-names : %s; %s to-install-packages :\n%s"
+                              pkg-names
+                              (length to-install-packages)
+                              to-install-packages)
+    to-install-packages))
 
 (defun configuration-layer//get-package-recipe (pkg-name)
   "Return the recipe for PKG-NAME if it has one."
@@ -1905,7 +1989,7 @@ RNAME is the name symbol of another existing layer."
         (when (and (listp location) (eq 'recipe (car location)))
           (cons pkg-name (cdr location)))))))
 
-(defun configuration-layer//new-version-available-p (pkg-name)
+(defun configuration-layer//new-version-available-upstream-p (pkg-name)
   "Return non nil if there is a new version available for PKG-NAME."
   (let ((recipe (configuration-layer//get-package-recipe pkg-name))
         (pkg (configuration-layer/get-package pkg-name))
@@ -1931,6 +2015,11 @@ RNAME is the name symbol of another existing layer."
                     configuration-layer--check-new-version-error-packages
                     :test #'eq)
         nil))))
+
+(defun configuration-layer//new-version-available-p (pkg-name)
+  "Return non nil if there is a new version available for PKG-NAME."
+  (unless (guix-system--emacs-package-p pkg-name)
+    (configuration-layer//new-version-available-upstream-p pkg-name)))
 
 (defun configuration-layer//get-packages-to-update (pkg-names)
   "Return a filtered list of PKG-NAMES to update."
@@ -2166,7 +2255,9 @@ to update."
   (configuration-layer/retrieve-package-archives nil 'force)
   (setq configuration-layer--check-new-version-error-packages nil)
   (let* ((distant-packages (configuration-layer//filter-distant-packages
-                            configuration-layer--used-packages t))
+                            configuration-layer--used-packages t
+                            ;; remove system packages installed by Guix
+                            (lambda (pkg) (not (guix-system--emacs-package-p (oref pkg name))))))
          (update-packages
           (configuration-layer//get-packages-to-update distant-packages))
          (skipped-count (length
@@ -2485,13 +2576,21 @@ Return nil when the package is built-in, and no other version is installed."
                               (package-desc-dir pkg-desc)
                             (package-desc-dir (car (alist-get pkg-desc package-alist))))))))
 
-(defun configuration-layer//package-delete (pkg-desc)
+(defun configuration-layer//package-delete-upstream (pkg-name)
   "Delete package PKG-DESC."
   ;; add force flag to ignore dependency checks in Emacs25
   (if (configuration-layer//system-package-p pkg-desc)
       (message "Would have removed package %s but this is a system package so it has not been changed."
                (package-desc-name pkg-desc))
     (package-delete pkg-desc t t)))
+
+(defun configuration-layer//package-delete (pkg-name)
+  "Delete package with name PKG-NAME."
+  (if (guix-system--emacs-package-p pkg-name)
+      ;; On Guix see `package-directory-list' where the entries are
+      ;; defined by configurations of 'guix home' and 'guix system'
+      (message "Can't remove package installed by GuixOS: %s" pkg-name)
+    (configuration-layer//package-delete-upstream pkg-name)))
 
 (defun configuration-layer/delete-orphan-packages (packages &optional include-system)
   "Delete PACKAGES if they are orphan.
