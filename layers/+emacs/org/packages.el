@@ -29,13 +29,6 @@
               buffer-file-name
               (bound-and-true-p byte-compile-current-file)
               (expand-file-name "packages.el" default-directory))))))
-(load (expand-file-name
-       "../../+spacemacs/spacemacs-layouts/funcs.el"
-       (file-name-directory
-        (or load-file-name
-            buffer-file-name
-            (bound-and-true-p byte-compile-current-file)
-            (expand-file-name "packages.el" default-directory)))))
 
 (defconst org-packages
   '(

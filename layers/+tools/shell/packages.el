@@ -21,47 +21,18 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;; Needed because of the `spacemacs|use-package-add-hook' macro
-(eval-when-compile
-  (require 'core-use-package-ext))
 (require 'core-use-package-ext)
 
-;; Needed because of the `spacemacs//eat-for-shell-pop' macro
-(eval-when-compile
+;; Needed because of the `spacemacs//eat-for-shell-pop' and
+;; `make-shell-pop-command' macros
+(eval-and-compile
   (load (expand-file-name
          "funcs.el"
          (file-name-directory
           (or load-file-name
               buffer-file-name
               (bound-and-true-p byte-compile-current-file)
-              (expand-file-name "packages.el" default-directory)))
-         )))
-(load (expand-file-name
-       "funcs.el"
-       (file-name-directory
-        (or load-file-name
-            buffer-file-name
-            (bound-and-true-p byte-compile-current-file)
-            (expand-file-name "packages.el" default-directory)))
-       ))
-
-;; Needed because of the `make-shell-pop-command' macro
-(eval-when-compile
-  (load (expand-file-name
-         "funcs.el"
-         (file-name-directory
-          (or load-file-name
-              buffer-file-name
-              (bound-and-true-p byte-compile-current-file)
-              (expand-file-name "packages.el" default-directory)))
-         )))
-(load (expand-file-name
-       "funcs.el"
-       (file-name-directory
-        (or load-file-name
-            buffer-file-name
-            (bound-and-true-p byte-compile-current-file)
-            (expand-file-name "packages.el" default-directory)))
-       ))
+              (expand-file-name "packages.el" default-directory))))))
 
 (defconst shell-packages
   '(
