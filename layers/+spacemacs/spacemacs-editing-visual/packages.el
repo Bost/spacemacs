@@ -24,6 +24,9 @@
 
 ;;; Code:
 
+;; Neeed by macro: `vhl/define-extension'
+(require 'volatile-highlights)
+
 (defconst spacemacs-editing-visual-packages
   '(
     column-enforce-mode

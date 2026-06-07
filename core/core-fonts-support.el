@@ -23,6 +23,8 @@
 (require 'core-funcs)
 (require 'core-load-paths)
 
+;; defines macro `spacemacs|do-after-display-system-init'
+(require 'core-display-init)
 (require 'core-spacemacs-buffer)
 
 (defvar spacemacs--diminished-minor-modes nil

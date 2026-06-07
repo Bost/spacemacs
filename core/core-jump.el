@@ -105,6 +105,9 @@ They are in order: `spacemacs-jump-handlers',
 (with-eval-after-load 'evil
   (evil-set-command-property 'spacemacs/jump-to-definition :jump t))
 
+;; Define spacemacs|eval-until-emacs-min-version
+(eval-when-compile (require 'core-versions))
+
 (spacemacs|eval-until-emacs-min-version "29.1"
   (unless (fboundp 'xref-go-back)
     (defalias 'xref-pop-marker-stack 'xref-go-back)))
