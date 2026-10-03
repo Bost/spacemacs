@@ -38,7 +38,7 @@ complete that part see `spacemacs/initialize-custom-file-sync'."
               (file-exists-p spacemacs--custom-file))
     (with-temp-file spacemacs--custom-file
       (let ((standard-output (current-buffer)))
-        (princ ";; -*- mode: emacs-lisp -*-\n")
+        (princ ";; -*- mode: emacs-lisp; lexical-binding: t; -*-\n")
         (princ ";; This file is where Emacs writes custom variables.
 ;; Spacemacs will copy its content to your dotfile automatically in the
 ;; function `dotspacemacs/emacs-custom-settings'.
